@@ -4,6 +4,7 @@ import ParseXlsxWorker from '~/workers/parse-xlsx.worker?worker'
 import InferColumnsWorker from '~/workers/infer-columns.worker?worker'
 import { isSpreadsheetPath } from '#shared/lib/parse-helpers'
 import { isTripFile } from '#shared/lib/match-provider'
+import { shouldSkipSpreadsheet } from '#shared/lib/should-skip-spreadsheet'
 import { normalizeTrips } from '#shared/lib/normalize-trips'
 import { mergeTrips } from '#shared/lib/trip-dedupe'
 import type { ColumnMapping, ParsedTable } from '#shared/types/import'
@@ -157,13 +158,21 @@ export function useRideImport() {
       }
 
       const tripTables: { path: string; table: ParsedTable }[] = []
-      for (let i = 0; i < spreadsheets.length; i++) {
-        const entry = spreadsheets[i]!
+      const toParse = spreadsheets.filter(entry => !shouldSkipSpreadsheet(entry.path))
+      const parseTotal = toParse.length || 1
+
+      for (let i = 0; i < toParse.length; i++) {
+        const entry = toParse[i]!
         const table = await parseSpreadsheet(entry.path, entry.data)
         if (isTripFile({ path: entry.path, headers: table.headers })) {
           tripTables.push({ path: entry.path, table })
         }
-        progress.value = 15 + Math.round(((i + 1) / spreadsheets.length) * 35)
+        progress.value = 15 + Math.round(((i + 1) / parseTotal) * 35)
+      }
+
+      if (toParse.length === 0) {
+        error.value = 'No trip files found—try your app’s trip export.'
+        return
       }
 
       if (tripTables.length === 0) {

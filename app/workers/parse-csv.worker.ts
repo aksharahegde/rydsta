@@ -1,6 +1,6 @@
-import Papa from 'papaparse'
+import { decodeUtf8 } from '#shared/lib/parse-helpers'
+import { parseCsvToTable } from '#shared/lib/parse-csv'
 import type { ParsedTable } from '#shared/types/import'
-import { decodeUtf8, fileNodeFromPath } from '#shared/lib/parse-helpers'
 
 type ParseCsvMessage = {
   type: 'parse-csv'
@@ -31,26 +31,7 @@ self.onmessage = (event: MessageEvent<ParseCsvMessage>) => {
 
   try {
     const text = decodeUtf8(msg.data)
-    const parsed = Papa.parse<Record<string, string>>(text, {
-      header: true,
-      skipEmptyLines: true,
-    })
-
-    if (parsed.errors.length > 0) {
-      postError(parsed.errors[0]?.message ?? 'CSV parse failed')
-      return
-    }
-
-    const headers = (parsed.meta.fields ?? []).map(String)
-    const rows = parsed.data.map(row =>
-      headers.map(header => String(row[header] ?? '')),
-    )
-
-    const table: ParsedTable = {
-      headers,
-      rows,
-      source: fileNodeFromPath(msg.path),
-    }
+    const table = parseCsvToTable(text, msg.path)
 
     const out: ParseCsvResultMessage = { type: 'parse-csv-result', table }
     self.postMessage(out)
