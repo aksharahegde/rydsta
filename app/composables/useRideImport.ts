@@ -21,7 +21,7 @@ const MAX_FILE_BYTES = 20 * 1024 * 1024
 
 type SpreadsheetEntry = { path: string; data: Uint8Array }
 
-type PendingImport = {
+export type PendingImport = {
   table: ParsedTable
   path: string
   provider: RideProvider
