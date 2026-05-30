@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap');
 
 @import 'tailwindcss';
 
@@ -126,4 +126,5 @@
     @apply bg-background text-foreground;
     @apply font-sans;
     }
+  html, body { overflow-x: clip; }
 }
