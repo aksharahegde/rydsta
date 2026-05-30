@@ -33,24 +33,10 @@ async function onFilesSelected(files: File[]) {
 
     <RideUploadDropzone
       :class="{ 'upload-page__dropzone--disabled': isImporting }"
+      :progress="progress"
+      :show-progress="isImporting"
       @files="onFilesSelected"
     />
-
-    <div
-      v-if="isImporting || progress > 0"
-      class="upload-page__progress"
-      data-testid="ride-upload-progress"
-      role="progressbar"
-      :aria-valuenow="progress"
-      aria-valuemin="0"
-      aria-valuemax="100"
-    >
-      <div
-        class="upload-page__progress-bar"
-        :style="{ width: `${progress}%` }"
-      />
-      <span class="upload-page__progress-label">{{ progress }}%</span>
-    </div>
 
     <p
       v-if="error"
@@ -94,29 +80,6 @@ async function onFilesSelected(files: File[]) {
 .upload-page__dropzone--disabled {
   pointer-events: none;
   opacity: 0.6;
-}
-
-.upload-page__progress {
-  margin-top: 1.25rem;
-  position: relative;
-  height: 0.5rem;
-  border-radius: 999px;
-  background: #e2e8f0;
-  overflow: hidden;
-}
-
-.upload-page__progress-bar {
-  height: 100%;
-  background: #6366f1;
-  transition: width 0.2s ease;
-}
-
-.upload-page__progress-label {
-  display: block;
-  margin-top: 0.5rem;
-  font-size: 0.8125rem;
-  color: #64748b;
-  text-align: center;
 }
 
 .upload-page__error {

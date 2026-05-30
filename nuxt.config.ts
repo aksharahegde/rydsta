@@ -5,8 +5,12 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   future: { compatibilityVersion: 4 },
-  modules: ['@nuxtjs/seo', '@vueuse/nuxt'],
+  modules: ['@nuxtjs/seo', '@vueuse/nuxt', 'shadcn-nuxt'],
   css: ['~/assets/css/main.css'],
+  shadcn: {
+    prefix: '',
+    componentDir: '@/components/ui',
+  },
   site: {
     url: 'https://ride-wrapped.example',
     name: 'Ride Wrapped',

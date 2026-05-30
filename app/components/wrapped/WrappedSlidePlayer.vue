@@ -135,30 +135,34 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
       class="wrapped-player__nav"
       aria-label="Story navigation"
     >
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="icon"
         class="wrapped-player__btn"
         :disabled="!canGoPrev"
         aria-label="Previous slide"
         @click="goPrev"
       >
         ←
-      </button>
+      </Button>
       <span
         class="wrapped-player__counter"
         aria-live="polite"
       >
         {{ slides.length ? index + 1 : 0 }} / {{ slides.length }}
       </span>
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="icon"
         class="wrapped-player__btn"
         :disabled="!canGoNext"
         aria-label="Next slide"
         @click="goNext"
       >
         →
-      </button>
+      </Button>
     </nav>
 
     <div
@@ -196,23 +200,17 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 .wrapped-player__btn {
   width: 3rem;
   height: 3rem;
-  border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.5);
   color: #f8fafc;
   font-size: 1.25rem;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  border-color: rgba(148, 163, 184, 0.35);
 }
 
 .wrapped-player__btn:hover:not(:disabled) {
   background: rgba(99, 102, 241, 0.35);
   border-color: rgba(165, 180, 252, 0.6);
-}
-
-.wrapped-player__btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
+  color: #f8fafc;
 }
 
 .wrapped-player__counter {

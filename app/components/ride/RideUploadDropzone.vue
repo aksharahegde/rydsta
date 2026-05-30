@@ -1,4 +1,15 @@
 <script setup lang="ts">
+const props = withDefaults(
+  defineProps<{
+    progress?: number
+    showProgress?: boolean
+  }>(),
+  {
+    progress: 0,
+    showProgress: false,
+  },
+)
+
 const emit = defineEmits<{
   files: [files: File[]]
 }>()
@@ -40,46 +51,80 @@ function openPicker() {
 </script>
 
 <template>
-  <div
-    data-testid="ride-upload-dropzone"
-    class="dropzone"
-    :class="{ 'dropzone--active': isDragging }"
-    role="button"
-    tabindex="0"
-    @click="openPicker"
-    @keydown.enter.prevent="openPicker"
-    @keydown.space.prevent="openPicker"
-    @dragover="onDragOver"
-    @dragleave="onDragLeave"
-    @drop="onDrop"
-  >
-    <input
-      ref="inputRef"
-      data-testid="ride-upload-input"
-      type="file"
-      class="dropzone__input"
-      :accept="accept"
-      multiple
-      @change="onInputChange"
-      @click.stop
+  <div class="dropzone-wrap">
+    <div
+      data-testid="ride-upload-dropzone"
+      class="dropzone"
+      :class="{ 'dropzone--active': isDragging }"
+      role="button"
+      tabindex="0"
+      @click="openPicker"
+      @keydown.enter.prevent="openPicker"
+      @keydown.space.prevent="openPicker"
+      @dragover="onDragOver"
+      @dragleave="onDragLeave"
+      @drop="onDrop"
     >
-    <p class="dropzone__title">
-      Drop your ride export here
-    </p>
-    <p class="dropzone__hint">
-      or click to browse — .zip, .csv, or .xlsx
-    </p>
+      <input
+        ref="inputRef"
+        data-testid="ride-upload-input"
+        type="file"
+        class="dropzone__input"
+        :accept="accept"
+        multiple
+        @change="onInputChange"
+        @click.stop
+      >
+      <p class="dropzone__title">
+        Drop your ride export here
+      </p>
+      <p class="dropzone__hint">
+        or click to browse — .zip, .csv, or .xlsx
+      </p>
+    </div>
+
+    <div
+      v-if="showProgress || props.progress > 0"
+      class="dropzone-wrap__progress"
+      data-testid="ride-upload-progress"
+      role="progressbar"
+      :aria-valuenow="props.progress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    >
+      <Progress
+        :model-value="props.progress"
+        class="dropzone-wrap__progress-bar"
+      />
+      <span class="dropzone-wrap__progress-label">{{ props.progress }}%</span>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.dropzone-wrap__progress {
+  margin-top: 1.25rem;
+}
+
+.dropzone-wrap__progress-bar {
+  height: 0.5rem;
+}
+
+.dropzone-wrap__progress-label {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+  text-align: center;
+}
+
 .dropzone {
-  border: 2px dashed #94a3b8;
+  border: 2px dashed var(--border);
   border-radius: 12px;
   padding: 2.5rem 1.5rem;
   text-align: center;
   cursor: pointer;
-  background: #f8fafc;
+  background: var(--muted);
   transition:
     border-color 0.15s ease,
     background 0.15s ease;
@@ -87,8 +132,8 @@ function openPicker() {
 
 .dropzone--active,
 .dropzone:hover {
-  border-color: #6366f1;
-  background: #eef2ff;
+  border-color: var(--primary);
+  background: color-mix(in oklch, var(--primary) 8%, var(--muted));
 }
 
 .dropzone__input {
@@ -99,12 +144,12 @@ function openPicker() {
   margin: 0 0 0.5rem;
   font-size: 1.125rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--foreground);
 }
 
 .dropzone__hint {
   margin: 0;
   font-size: 0.875rem;
-  color: #64748b;
+  color: var(--muted-foreground);
 }
 </style>
