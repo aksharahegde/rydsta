@@ -1,75 +1,78 @@
-# Nuxt Minimal Starter
+# Ride Wrapped
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Turn your Uber, Ola, or Rapido trip history into a shareable Wrapped card. Stats, animated route map, rider personality, and heatmap — all in your browser, nothing uploaded.
 
-## Setup
+---
 
-Make sure to install dependencies:
+## What it does
+
+Drop a ride export and get a visual summary of your year:
+
+- **Trip totals** — rides, total spend, busiest month
+- **Rider archetype** — Night Owl, Airport Regular, or Road Warrior based on your patterns
+- **Animated route map** — replay your trips city by city with MapLibre GL
+- **Activity heatmap** — a full-year GitHub-style heatmap of your ride days
+- **Deep stats** — distance, fare average, primary city, vehicle type
+- **Shareable card** — download a PNG to post anywhere
+
+## Supported exports
+
+| Provider | Export type |
+|---|---|
+| **Uber** | Rider CSV export — `trips_data-0.csv` via Account → Privacy → Download my data |
+| **Ola** | Booking history export via Account → Help → Data requests |
+| **Rapido** | Ride history CSV via Profile → My Rides → Export |
+
+## Privacy
+
+Your trip data never leaves your device. Everything runs in the browser — the file you drop is parsed by a Web Worker and discarded when you close the tab. No account, no server, no upload.
+
+---
+
+## Development
+
+Install dependencies:
 
 ```bash
-# npm
-npm install
-
-# pnpm
 pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Start the dev server at `http://localhost:3000`:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
 pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
-
-Build the application for production:
+Run unit tests:
 
 ```bash
-# npm
-npm run build
+pnpm test
+```
 
-# pnpm
+Run end-to-end tests (requires a running dev server):
+
+```bash
+pnpm test:e2e
+```
+
+Build for production:
+
+```bash
 pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+## Tech
 
-```bash
-# npm
-npm run preview
+- [Nuxt 3](https://nuxt.com) + Vue 3
+- [MapLibre GL](https://maplibre.org) for route maps
+- [OpenFreeMap](https://openfreemap.org) for map tiles
+- [PapaParse](https://www.papaparse.com) for CSV parsing
+- [SheetJS](https://sheetjs.com) for XLSX parsing
+- [fflate](https://101arrowz.github.io/fflate/) for ZIP extraction
+- Tailwind CSS + shadcn-vue
 
-# pnpm
-pnpm preview
+All file parsing runs in Web Workers. Trip data is held in memory only.
 
-# yarn
-yarn preview
+---
 
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Built by [Akshara Hegde](https://akshara.dev)
