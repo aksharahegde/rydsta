@@ -1,6 +1,6 @@
 # Rydsta
 
-Your ride stats, finally worth looking at. Turn your Uber, Ola, or Rapido trip history into a shareable visual story — stats, animated route map, rider personality, and heatmap — all in your browser, nothing uploaded.
+Your ride stats, finally worth looking at. Turn your Uber, Ola, or Rapido trip history into a shareable visual story: stats, animated route map, rider personality, and heatmap, all in your browser, nothing uploaded.
 
 ---
 
@@ -8,24 +8,24 @@ Your ride stats, finally worth looking at. Turn your Uber, Ola, or Rapido trip h
 
 Drop a ride export and get a visual summary of your year:
 
-- **Trip totals** — rides, total spend, busiest month
-- **Rider archetype** — Night Owl, Airport Regular, or Road Warrior based on your patterns
-- **Animated route map** — replay your trips city by city with MapLibre GL
-- **Activity heatmap** — a full-year GitHub-style heatmap of your ride days
-- **Deep stats** — distance, fare average, primary city, vehicle type
-- **Shareable card** — download a PNG to post anywhere
+- **Trip totals:** rides, total spend, busiest month
+- **Rider archetype:** Night Owl, Airport Regular, or Road Warrior based on your patterns
+- **Animated route map:** replay your trips city by city with MapLibre GL
+- **Activity heatmap:** a full-year GitHub-style heatmap of your ride days
+- **Deep stats:** distance, fare average, primary city, vehicle type
+- **Shareable card:** download a PNG to post anywhere
 
 ## Supported exports
 
 | Provider | Export type |
 |---|---|
-| **Uber** | Rider CSV export — `trips_data-0.csv` via Account → Privacy → Download my data |
+| **Uber** | Rider CSV export: `trips_data-0.csv` via Account → Privacy → Download my data |
 | **Ola** | Booking history export via Account → Help → Data requests |
 | **Rapido** | Ride history CSV via Profile → My Rides → Export |
 
 ## Privacy
 
-Your trip data never leaves your device. Everything runs in the browser — the file you drop is parsed by a Web Worker and discarded when you close the tab. No account, no server, no upload.
+Your trip data never leaves your device. Everything runs in the browser; the file you drop is parsed by a Web Worker and discarded when you close the tab. No account, no server, no upload.
 
 ---
 

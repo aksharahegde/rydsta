@@ -4,7 +4,7 @@
       class="rw-landing-preview-personality__stars"
       aria-hidden="true"
     />
-    <p class="rw-landing-preview-personality__time">22:00 — 05:00</p>
+    <p class="rw-landing-preview-personality__time">22:00 – 05:00</p>
     <p class="rw-landing-preview-personality__name">Night<br>Owl</p>
   </div>
 </template>

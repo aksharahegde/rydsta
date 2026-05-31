@@ -18,9 +18,9 @@ const description =
   'Turn your ride history into a shareable year-in-rides story. Supports CSV, XLSX, and ZIP exports. 100% in your browser.'
 
 useSeoMeta({
-  title: 'Rydsta — Your rides, by the numbers',
+  title: 'Rydsta | Your rides, by the numbers',
   description,
-  ogTitle: 'Rydsta — Your rides, by the numbers',
+  ogTitle: 'Rydsta | Your rides, by the numbers',
   ogDescription: description,
   twitterCard: 'summary_large_image',
 })

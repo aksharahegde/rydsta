@@ -153,7 +153,7 @@ export function useRideImport() {
       progress.value = 15
 
       if (spreadsheets.length === 0) {
-        error.value = 'No trip files found—try your app’s trip export.'
+        error.value = 'No trip files found. Try your app’s trip export.'
         return
       }
 
@@ -171,12 +171,12 @@ export function useRideImport() {
       }
 
       if (toParse.length === 0) {
-        error.value = 'No trip files found—try your app’s trip export.'
+        error.value = 'No trip files found. Try your app’s trip export.'
         return
       }
 
       if (tripTables.length === 0) {
-        error.value = 'No trip files found—try your app’s trip export.'
+        error.value = 'No trip files found. Try your app’s trip export.'
         return
       }
 

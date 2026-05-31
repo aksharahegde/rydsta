@@ -110,11 +110,11 @@ function onSubmit() {
             :id="`mapping-${field}`"
             class="mapping-confirm__select w-full"
           >
-            <SelectValue placeholder="— Not mapped —" />
+            <SelectValue placeholder="(Not mapped)" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem :value="UNMAPPED_VALUE">
-              — Not mapped —
+              (Not mapped)
             </SelectItem>
             <SelectItem
               v-for="header in headers"

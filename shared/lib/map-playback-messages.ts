@@ -6,7 +6,7 @@ export const MAP_PLAYBACK_MESSAGES = [
   'GPS nostalgia initializing…',
   'Stitching routes like a highlight reel…',
   'Warming up the streets you actually used…',
-  'Almost there — buckle up',
+  'Almost there, buckle up',
 ] as const
 
 export function mapPlaybackMessageAt(index: number): string {

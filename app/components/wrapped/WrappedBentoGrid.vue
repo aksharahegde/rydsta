@@ -92,7 +92,7 @@ const personalityTileClass = computed(() =>
 const personalityTimeLabel = computed(() => {
   switch (personality.value) {
     case 'Night Owl':
-      return '22:00 — 05:00'
+      return '22:00 – 05:00'
     case 'Airport Regular':
       return 'Terminal regular'
     default:
