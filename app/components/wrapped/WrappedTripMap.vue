@@ -21,6 +21,11 @@ import {
 import { arcDrawMsForSpeed } from '#shared/lib/map-playback-speed'
 import type { Trip } from '#shared/types/trip'
 
+const emit = defineEmits<{
+  ready: []
+  playbackSettled: [index: number]
+}>()
+
 const props = withDefaults(
   defineProps<{
     trips: Trip[]
@@ -36,6 +41,11 @@ const props = withDefaults(
     playbackSpeed: 1,
   },
 )
+
+let hasEmittedReady = false
+let playbackSyncGen = 0
+let syncRaf = 0
+let lastPlaybackArcIndex = -1
 
 const arcDrawMs = computed(() => arcDrawMsForSpeed(props.playbackSpeed))
 
@@ -161,10 +171,16 @@ function onStyleReady() {
 
 function scheduleSync() {
   if (!map) return
-  if (map.isStyleLoaded()) {
+  if (syncRaf) cancelAnimationFrame(syncRaf)
+  syncRaf = requestAnimationFrame(() => {
+    syncRaf = 0
+    if (!map) return
+    if (!map.isStyleLoaded() || !layersReady) {
+      map.once('idle', scheduleSync)
+      return
+    }
     syncMap()
-    map.once('idle', () => syncMap())
-  }
+  })
 }
 
 function ensureMap() {
@@ -294,6 +310,9 @@ function syncOverview() {
 function syncPlayback() {
   if (!map?.isStyleLoaded() || !layersReady) return
 
+  const settleGen = ++playbackSyncGen
+  const settledIndex = props.activeIndex
+
   updateRouteColor()
 
   const trip = coordTrips.value[props.activeIndex]
@@ -339,17 +358,38 @@ function syncPlayback() {
   })
 
   const arc = tripArcGeoJson(trip)
+  cancelArcAnimation()
+  setGeoJson('trip-arc', { type: 'FeatureCollection', features: [] })
+
   if (arc) {
-    animateArc(arc.geometry.coordinates)
+    const sameTrip = lastPlaybackArcIndex === props.activeIndex
+    lastPlaybackArcIndex = props.activeIndex
+    if (sameTrip) {
+      setGeoJson('trip-arc', { type: 'FeatureCollection', features: [arc] })
+    } else {
+      animateArc(arc.geometry.coordinates)
+    }
+  } else {
+    lastPlaybackArcIndex = props.activeIndex
   }
 
   fitCamera(48)
+
+  map.once('idle', () => {
+    if (settleGen !== playbackSyncGen) return
+    emit('playbackSettled', settledIndex)
+  })
 }
 
 function syncMap() {
   if (!map?.isStyleLoaded() || !layersReady) return
   if (props.mode === 'overview') syncOverview()
   else syncPlayback()
+
+  if (!hasEmittedReady) {
+    hasEmittedReady = true
+    emit('ready')
+  }
 }
 
 function reloadStyle() {
@@ -389,10 +429,12 @@ onMounted(() => {
 
 onUnmounted(() => {
   cancelArcAnimation()
+  if (syncRaf) cancelAnimationFrame(syncRaf)
   resizeObserver?.disconnect()
   map?.remove()
   map = null
   layersReady = false
+  lastPlaybackArcIndex = -1
 })
 </script>
 
