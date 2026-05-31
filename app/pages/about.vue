@@ -22,7 +22,9 @@ useSeoMeta({
           to="/"
           class="rw-wordmark"
           aria-label="Rydsta home"
-        >Rydsta</NuxtLink>
+        >
+          <RideLogo />
+        </NuxtLink>
         <div class="rw-nav__actions">
           <RideThemeToggle />
           <NuxtLink
@@ -152,7 +154,9 @@ useSeoMeta({
           Your city moved you.<br>Now see how.
         </p>
         <div class="rw-footer-meta">
-          <span class="rw-wordmark-sm">Rydsta</span>
+          <span class="rw-footer-brand">
+            <RideLogo size="sm" />
+          </span>
           <span
             class="rw-footer-sep"
             aria-hidden="true"

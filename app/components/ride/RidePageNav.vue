@@ -13,9 +13,10 @@ defineProps<{
       <NuxtLink
         to="/"
         class="rw-page-nav__home"
+        aria-label="Rydsta home"
         data-testid="ride-nav-home"
       >
-        Rydsta
+        <RideLogo size="sm" />
       </NuxtLink>
       <template v-if="current">
         <span

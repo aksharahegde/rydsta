@@ -8,6 +8,9 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/seo', '@vueuse/nuxt', 'shadcn-nuxt'],
   app: {
     head: {
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/logo/rydsta.svg' },
+      ],
       script: [
         {
           key: 'ride-theme-init',

@@ -896,15 +896,14 @@
 }
 
 .rw-page-nav__home {
-  font-family: var(--font-display);
-  font-weight: 600;
-  color: var(--color-ink);
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
   text-decoration: none;
-  letter-spacing: -0.02em;
 }
 
 .rw-page-nav__home:hover {
-  color: var(--color-ink-2);
+  opacity: 0.85;
 }
 
 .rw-page-nav__home:focus-visible {

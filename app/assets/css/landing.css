@@ -32,12 +32,23 @@
   gap: var(--space-xs);
 }
 
+.rw-logo {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+
+.rw-logo--sm {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .rw-wordmark {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--text-md);
-  letter-spacing: -0.025em;
-  color: var(--color-ink);
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  line-height: 0;
   user-select: none;
 }
 
@@ -428,10 +439,9 @@
   color: var(--color-ink-2);
 }
 
-.rw-wordmark-sm {
-  font-family: var(--font-display);
-  font-weight: 600;
-  color: var(--color-ink);
+.rw-footer-brand {
+  display: inline-flex;
+  align-items: center;
 }
 
 .rw-footer-sep {
