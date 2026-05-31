@@ -34,7 +34,6 @@ const props = withDefaults(
     isPlaying?: boolean
     interactive?: boolean
     playbackSpeed?: number
-    forceNight?: boolean
   }>(),
   {
     activeIndex: 0,
@@ -42,7 +41,6 @@ const props = withDefaults(
     isPlaying: false,
     interactive: true,
     playbackSpeed: 1,
-    forceNight: false,
   },
 )
 
@@ -68,7 +66,7 @@ const overviewTrips = computed(() => tripsForMapOverview(props.trips))
 const routeColor = computed(() => (isDark.value ? '#f8f6f2' : '#1c2233'))
 
 function mapStyleUrl(): string {
-  return (isDark.value || props.forceNight) ? MAP_STYLE_DARK : MAP_STYLE_LIGHT
+  return isDark.value ? MAP_STYLE_DARK : MAP_STYLE_LIGHT
 }
 
 function addTripLayers() {
@@ -270,21 +268,21 @@ function animateArc(fullCoords: ReturnType<typeof sliceArcCoordinates>) {
 function fitCamera(padding = 40) {
   if (!map) return
 
-  const isPlayback = props.mode === 'playback'
-  const bounds = isPlayback
+  const isActivePlaybackTrip = props.mode === 'playback' && props.isPlaying
+  const bounds = isActivePlaybackTrip
     ? boundsForTrip(coordTrips.value[props.activeIndex]!)
     : boundsForOverview(props.trips)
 
   if (bounds) {
     map.fitBounds(bounds, {
       padding,
-      duration: isPlayback ? 900 : 0,
-      maxZoom: isPlayback ? MAP_PLAYBACK_MAX_ZOOM : MAP_OVERVIEW_MAX_ZOOM,
+      duration: isActivePlaybackTrip ? 900 : 0,
+      maxZoom: isActivePlaybackTrip ? MAP_PLAYBACK_MAX_ZOOM : MAP_OVERVIEW_MAX_ZOOM,
       minZoom: MAP_OVERVIEW_MIN_ZOOM,
       // ease-out cubic: quick departure, smooth arrival
-      easing: isPlayback ? (t: number) => 1 - Math.pow(1 - t, 3) : undefined,
+      easing: isActivePlaybackTrip ? (t: number) => 1 - Math.pow(1 - t, 3) : undefined,
       // curve=1 keeps zoom level stable during the pan — less "fly up and dive down"
-      curve: isPlayback ? 1 : 1.42,
+      curve: isActivePlaybackTrip ? 1 : 1.42,
     })
     return
   }
@@ -294,9 +292,9 @@ function fitCamera(padding = 40) {
     map.flyTo({
       center,
       zoom: MAP_OVERVIEW_MAX_ZOOM,
-      duration: isPlayback ? 900 : 0,
-      easing: isPlayback ? (t: number) => 1 - Math.pow(1 - t, 3) : undefined,
-      curve: isPlayback ? 1 : 1.42,
+      duration: isActivePlaybackTrip ? 900 : 0,
+      easing: isActivePlaybackTrip ? (t: number) => 1 - Math.pow(1 - t, 3) : undefined,
+      curve: isActivePlaybackTrip ? 1 : 1.42,
     })
   }
 }
@@ -419,21 +417,21 @@ function syncMap() {
 
 function reloadStyle() {
   if (!map) return
+  cancelArcAnimation()
+  lastPlaybackArcIndex = -1
   layersReady = false
   map.setStyle(mapStyleUrl())
 }
 
 watch(
-  () => [props.trips, props.activeIndex, props.mode, props.isPlaying] as const,
-  () => scheduleSync(),
-  { deep: true },
+  () => [props.trips.length, props.activeIndex, props.mode, props.isPlaying] as const,
+  ([, index], [, prevIndex]) => {
+    if (index !== prevIndex) lastPlaybackArcIndex = -1
+    scheduleSync()
+  },
 )
 
 watch(isDark, () => {
-  reloadStyle()
-})
-
-watch(() => props.forceNight, () => {
   reloadStyle()
 })
 

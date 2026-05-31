@@ -76,11 +76,6 @@ const timeOfDay = computed(() => {
   return { label: 'Evening', cls: 'rw-tod--evening' }
 })
 
-const isNightTrip = computed(() => {
-  const h = currentTrip.value?.startedAt.getHours() ?? -1
-  return h >= 22 || (h >= 0 && h < 5)
-})
-
 const fareLabel = computed(() => {
   const trip = currentTrip.value
   if (!trip?.fare) return null
@@ -269,7 +264,6 @@ onUnmounted(() => {
             :active-index="currentIndex"
             :playback-speed="playbackSpeed"
             :interactive="true"
-            :force-night="isNightTrip"
             @ready="onMapReady"
             @playback-settled="onPlaybackSettled"
           />
