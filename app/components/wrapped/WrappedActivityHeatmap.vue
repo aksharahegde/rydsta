@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import type { YearHeatmap } from '#shared/lib/ride-heatmap'
 
-defineProps<{
-  heatmap: YearHeatmap
-}>()
+withDefaults(
+  defineProps<{
+    heatmap: YearHeatmap
+    animate?: boolean
+  }>(),
+  { animate: true },
+)
 
 const weekdayLabels = ['', 'Mon', '', 'Wed', '', 'Fri', ''] as const
+
+function cellIndex(weekIndex: number, dayIndex: number): number {
+  return weekIndex * 7 + dayIndex
+}
 </script>
 
 <template>
@@ -48,7 +56,11 @@ const weekdayLabels = ['', 'Mon', '', 'Wed', '', 'Fri', ''] as const
             v-for="(cell, di) in week.days"
             :key="`${wi}-${di}`"
             class="rw-heatmap__cell"
-            :class="cell.date ? `rw-heatmap__cell--level-${cell.level}` : 'rw-heatmap__cell--empty'"
+            :class="[
+              cell.date ? `rw-heatmap__cell--level-${cell.level}` : 'rw-heatmap__cell--empty',
+              { 'rw-heatmap__cell--animate': animate && cell.date },
+            ]"
+            :style="animate && cell.date ? { '--viz-i': cellIndex(wi, di) } : undefined"
             :title="cell.date ? `${cell.date}: ${cell.count} ride${cell.count === 1 ? '' : 's'}` : undefined"
           />
         </div>

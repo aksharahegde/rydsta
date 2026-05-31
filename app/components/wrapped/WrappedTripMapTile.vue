@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import WrappedTripMap from '~/components/wrapped/WrappedTripMap.vue'
 import {
   primaryCityFromTrips,
   tripsWithCoordinates,
@@ -31,6 +32,13 @@ function onExpand() {
   if (!hasCoords.value) return
   emit('expand')
 }
+
+function onExpandKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault()
+    onExpand()
+  }
+}
 </script>
 
 <template>
@@ -40,11 +48,13 @@ function onExpand() {
     :class="{ 'rw-tile--trip-map--empty': !hasCoords }"
   >
     <template v-if="hasCoords">
-      <button
-        type="button"
+      <div
+        role="button"
+        tabindex="0"
         class="rw-tile--trip-map-body"
         data-testid="wrapped-trip-map-expand"
         @click="onExpand"
+        @keydown="onExpandKeydown"
       >
         <ClientOnly>
           <WrappedTripMap
@@ -65,7 +75,7 @@ function onExpand() {
           </p>
           <span class="rw-tile--trip-map-expand-label">Expand map</span>
         </div>
-      </button>
+      </div>
     </template>
 
     <template v-else>

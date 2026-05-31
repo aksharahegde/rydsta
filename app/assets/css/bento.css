@@ -44,6 +44,25 @@
 
   --rw-content-max: 64rem;
   --rw-content-pad: var(--space-md);
+
+  /* Decorative tile charts: alpha in color, not container opacity */
+  --rw-viz-ink: oklch(44% 0.04 264 / 0.3);
+  --rw-viz-accent: oklch(54% 0.16 55 / 0.34);
+  --rw-viz-on-dark: oklch(94% 0.02 95 / 0.38);
+  --rw-viz-area: 0.45;
+  --rw-viz-band-h: clamp(3rem, 24%, 4.25rem);
+  --rw-viz-band-h-sm: clamp(2.5rem, 28%, 3.25rem);
+  --rw-tile-grid: oklch(50% 0.02 264 / 0.11);
+  --rw-viz-wire: oklch(44% 0.04 264 / 0.34);
+  --rw-viz-glow: oklch(54% 0.16 55);
+
+  --rw-personality-bg: oklch(22% 0.025 264);
+  --rw-personality-border: oklch(34% 0.02 264 / 0.85);
+  --rw-personality-ink: oklch(97% 0.01 95);
+  --rw-personality-muted: oklch(72% 0.02 264 / 0.72);
+  --rw-personality-wire: oklch(88% 0.02 264 / 0.28);
+  --rw-personality-glow: oklch(78% 0.16 70);
+  --rw-personality-grid: oklch(52% 0.02 264 / 0.22);
 }
 
 .dark {
@@ -57,6 +76,20 @@
   --heatmap-2: oklch(48% 0.12 65);
   --heatmap-3: oklch(62% 0.16 60);
   --heatmap-4: oklch(75% 0.17 70);
+
+  --rw-viz-ink: oklch(90% 0.02 95 / 0.32);
+  --rw-viz-accent: oklch(78% 0.15 70 / 0.38);
+  --rw-viz-on-dark: oklch(96% 0.01 95 / 0.42);
+  --rw-viz-area: 0.48;
+  --rw-tile-grid: oklch(78% 0.02 264 / 0.1);
+  --rw-viz-wire: oklch(88% 0.02 264 / 0.32);
+  --rw-viz-glow: oklch(78% 0.16 70);
+
+  --rw-personality-bg: oklch(18% 0.025 264);
+  --rw-personality-border: oklch(38% 0.02 264 / 0.7);
+  --rw-personality-wire: oklch(90% 0.02 264 / 0.34);
+  --rw-personality-glow: oklch(82% 0.17 72);
+  --rw-personality-grid: oklch(48% 0.02 264 / 0.26);
 }
 
 /* Shared centered column for landing + wrapped */
@@ -111,6 +144,46 @@
   box-shadow: 0 8px 24px -10px var(--color-shadow);
 }
 
+.rw-tile > :not(.rw-tile-viz) {
+  position: relative;
+  z-index: 1;
+}
+
+.rw-tile--blueprint::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--rw-tile-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rw-tile-grid) 1px, transparent 1px);
+  background-size: 1.125rem 1.125rem;
+  background-position: left bottom;
+  -webkit-mask-image: linear-gradient(to top, #000 28%, transparent 82%);
+  mask-image: linear-gradient(to top, #000 28%, transparent 82%);
+}
+
+.rw-tile--blueprint-dark::before {
+  --rw-tile-grid: oklch(92% 0.02 95 / 0.08);
+}
+
+.rw-map-stats__item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--rw-tile-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rw-tile-grid) 1px, transparent 1px);
+  background-size: 0.75rem 0.75rem;
+  background-position: left bottom;
+  opacity: 0.75;
+  -webkit-mask-image: linear-gradient(to top, #000 35%, transparent 90%);
+  mask-image: linear-gradient(to top, #000 35%, transparent 90%);
+}
+
 /* Grid placement (4-col desktop, 3 rows) */
 .rw-tile--stat {
   grid-column: 1 / 3;
@@ -118,25 +191,42 @@
   background-color: var(--color-paper);
 }
 
+.rw-tile--personality,
 .rw-tile--night,
 .rw-tile--personality-airport,
 .rw-tile--personality-warrior {
   grid-column: 3 / 4;
   grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: var(--rw-personality-bg);
+  border-color: var(--rw-personality-border);
+  background-image:
+    linear-gradient(var(--rw-personality-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rw-personality-grid) 1px, transparent 1px);
+  background-size: 1.125rem 1.125rem;
+  background-position: left bottom;
+}
+
+.rw-tile--personality::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, var(--rw-personality-bg) 0%, transparent 42%),
+    radial-gradient(
+      ellipse 90% 55% at 50% 100%,
+      oklch(from var(--rw-personality-glow) l c h / 0.14),
+      transparent 72%
+    );
 }
 
 .rw-tile--night {
-  background-color: var(--color-night);
-  border-color: var(--color-night);
-}
-
-.rw-tile--personality-airport {
-  background-color: var(--color-accent-bg);
-  border-color: var(--color-accent-border);
-}
-
-.rw-tile--personality-warrior {
-  background-color: var(--color-paper-2);
+  background-color: var(--rw-personality-bg);
+  border-color: var(--rw-personality-border);
 }
 
 .rw-tile--privacy {
@@ -175,6 +265,13 @@
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-sm);
   background-color: var(--color-paper-2);
+  position: relative;
+  overflow: hidden;
+}
+
+.rw-map-stats__item > :not(.rw-tile-viz) {
+  position: relative;
+  z-index: 1;
 }
 
 .rw-map-stats__value {
@@ -234,6 +331,15 @@
   text-align: left;
   border-radius: inherit;
   overflow: hidden;
+  display: block;
+}
+
+.rw-tile--trip-map-body .rw-trip-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
 }
 
 .rw-tile--trip-map-overlay {
@@ -294,6 +400,8 @@
 }
 
 .rw-tile--trip-map-fallback {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -430,6 +538,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
 }
 
 .rw-stars::before {
@@ -469,51 +579,44 @@
     -15px 30px 0 var(--color-night-star-hi);
 }
 
+.rw-tile--personality .rw-tile-time,
 .rw-tile--night .rw-tile-time,
-.rw-tile--personality-airport .rw-tile-time {
+.rw-tile--personality-airport .rw-tile-time,
+.rw-tile--personality-warrior .rw-tile-time {
   font-size: var(--text-xs);
-  letter-spacing: 0.06em;
-  color: var(--color-night-ink);
-  opacity: 0.65;
-  margin-bottom: var(--space-md);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rw-personality-muted);
+  margin-bottom: var(--space-sm);
   margin-top: var(--space-2xs);
 }
 
-.rw-tile--personality-airport .rw-tile-time {
-  color: var(--color-ink-2);
-  opacity: 1;
-}
-
+.rw-tile--personality .rw-tile-persona,
 .rw-tile--night .rw-tile-persona,
 .rw-tile--personality-airport .rw-tile-persona,
 .rw-tile--personality-warrior .rw-tile-persona {
   font-family: var(--font-display);
   font-size: var(--text-2xl);
   font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  color: var(--color-night-ink);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--rw-personality-ink);
 }
 
 .rw-tile-persona--stacked {
   white-space: pre-line;
   max-width: 12ch;
+  flex: 1;
+  min-height: 0;
 }
 
-.rw-tile--personality-airport .rw-tile-persona,
-.rw-tile--personality-warrior .rw-tile-persona {
-  color: var(--color-ink);
-}
-
-.rw-tile-persona-sub {
+.rw-tile--personality .rw-tile-persona-sub {
   font-size: var(--text-sm);
-  color: var(--color-ink-2);
-  margin-top: var(--space-2xs);
-}
-
-.rw-tile--night .rw-tile-persona-sub {
-  color: var(--color-night-ink);
-  opacity: 0.65;
+  color: var(--rw-personality-muted);
+  margin-top: var(--space-xs);
+  max-width: 16ch;
+  line-height: 1.35;
 }
 
 /* ── Tile: Privacy / pickup ──────────────────────────────────── */
@@ -898,31 +1001,39 @@
   height: 0.75rem;
   border-radius: 2px;
   display: block;
+  border: 1px solid var(--color-rule);
+  box-sizing: border-box;
 }
 
 .rw-heatmap__cell--empty {
   background: transparent;
+  border-color: transparent;
 }
 
 .rw-heatmap__cell--level-0 {
   background: var(--heatmap-0);
-  border: 1px solid var(--heatmap-0-border);
+  border-color: var(--heatmap-0-border);
 }
 
 .rw-heatmap__cell--level-1 {
   background: var(--heatmap-1);
+  border-color: oklch(from var(--heatmap-1) l c h / 0.55);
 }
 
 .rw-heatmap__cell--level-2 {
   background: var(--heatmap-2);
+  border-color: oklch(from var(--heatmap-2) l c h / 0.55);
 }
 
 .rw-heatmap__cell--level-3 {
   background: var(--heatmap-3);
+  border-color: oklch(from var(--heatmap-3) l c h / 0.55);
 }
 
 .rw-heatmap__cell--level-4 {
   background: var(--heatmap-4);
+  border-color: oklch(from var(--heatmap-4) l c h / 0.65);
+  box-shadow: inset 0 0 0 1px oklch(from var(--color-accent) l c h / 0.35);
 }
 
 /* ── Trip map stage (fullscreen playback) ─────────────────────── */
@@ -1206,6 +1317,329 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+  }
+}
+
+/* ── Tile data viz (wireframe charts) ────────────────────────── */
+.rw-tile-viz {
+  position: absolute;
+  z-index: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  pointer-events: none;
+  color: var(--rw-viz-wire);
+  -webkit-mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+}
+
+.rw-tile-viz--band {
+  inset: auto var(--space-sm) var(--space-sm) var(--space-sm);
+  width: auto;
+  height: clamp(3.25rem, 26%, 4.75rem);
+}
+
+.rw-tile-viz--band-sm {
+  inset: auto var(--space-sm) var(--space-sm) var(--space-sm);
+  width: auto;
+  height: clamp(2.75rem, 30%, 3.5rem);
+  justify-content: stretch;
+}
+
+.rw-tile-viz--feature {
+  inset: auto 0 0 0;
+  width: 100%;
+  height: 54%;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 var(--space-2xs) var(--space-xs);
+  -webkit-mask-image: linear-gradient(to top, #000 58%, transparent 96%);
+  mask-image: linear-gradient(to top, #000 58%, transparent 96%);
+}
+
+.rw-tile-viz--personality {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 var(--space-2xs) var(--space-xs);
+  color: var(--rw-personality-wire);
+  -webkit-mask-image: linear-gradient(to top, #000 62%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 62%, transparent 100%);
+}
+
+.rw-tile-viz--micro {
+  inset: auto var(--space-2xs) var(--space-2xs) auto;
+  width: min(48%, 3.75rem);
+  height: min(46%, 3.25rem);
+  max-width: 3.75rem;
+  max-height: 3.25rem;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.rw-tile-viz--cta {
+  inset: auto var(--space-md) var(--space-md) auto;
+  width: min(44%, 4.25rem);
+  height: min(44%, 4.25rem);
+  max-width: 4.25rem;
+  max-height: 4.25rem;
+  color: oklch(92% 0.02 95 / 0.38);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.rw-tile-viz svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.rw-tile-viz--feature svg {
+  width: 82%;
+  height: 100%;
+  max-height: 7rem;
+}
+
+.rw-tile-viz--personality svg {
+  width: 112%;
+  height: min(64%, 13.5rem);
+  max-height: 13.5rem;
+}
+
+.rw-chart-wire__grid {
+  opacity: 0.85;
+}
+
+.rw-chart-wire__guide {
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  animation: rw-viz-fade-in 500ms var(--ease-out) 100ms both;
+}
+
+.rw-chart-wire__stroke,
+.rw-chart-route__path,
+.rw-chart-pin__marker {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: rw-viz-stroke-in 850ms var(--ease-out) both;
+}
+
+.rw-chart-wire__stem,
+.rw-chart-bars__stem {
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  animation: rw-viz-fade-in 420ms var(--ease-out) both;
+  animation-delay: calc(var(--viz-i, 0) * 38ms + 140ms);
+}
+
+.rw-chart-wire__cap,
+.rw-chart-bars__cap {
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  animation: rw-viz-fade-in 380ms var(--ease-out) both;
+  animation-delay: calc(var(--viz-i, 0) * 38ms + 220ms);
+}
+
+.rw-chart-wire__mark {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  animation: rw-viz-fade-in 420ms var(--ease-out) 380ms both;
+}
+
+.rw-chart-wire__node {
+  fill: currentColor;
+  opacity: 0;
+  animation: rw-viz-fade-in 420ms var(--ease-out) 480ms both;
+}
+
+.rw-chart-wire__node--glow {
+  fill: var(--rw-viz-glow);
+  filter: drop-shadow(0 0 4px oklch(54% 0.16 55 / 0.65));
+  animation-delay: 620ms;
+}
+
+.dark .rw-chart-wire__node--glow {
+  filter: drop-shadow(0 0 5px oklch(78% 0.16 70 / 0.7));
+}
+
+.rw-tile--personality .rw-chart-wire__node--glow {
+  fill: var(--rw-personality-glow);
+}
+
+.rw-chart-sparkline__line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: rw-viz-stroke-in 900ms var(--ease-out) both;
+}
+
+.rw-chart-sparkline__area {
+  fill: currentColor;
+  fill-opacity: 0;
+  animation: rw-viz-spark-area-in 700ms var(--ease-out) 200ms both;
+}
+
+.rw-chart-icon__stroke,
+.rw-chart-icon__ring,
+.rw-chart-icon__body,
+.rw-chart-icon__wheel,
+.rw-chart-icon__coin {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  animation: rw-viz-fade-in 480ms var(--ease-out) both;
+  animation-delay: calc(var(--viz-i, 0) * 50ms + 100ms);
+}
+
+.rw-chart-pin__ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  animation: rw-viz-fade-in 480ms var(--ease-out) both;
+  animation-delay: calc(var(--viz-i, 0) * 80ms + 60ms);
+}
+
+.rw-chart-download__frame {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  animation: rw-viz-fade-in 550ms var(--ease-out) 150ms both;
+}
+
+.rw-chart-download__arrow {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  animation: rw-viz-stroke-in 700ms var(--ease-out) 260ms both;
+}
+
+.rw-heatmap__cell--animate {
+  opacity: 0;
+  animation: rw-viz-fade-in 320ms var(--ease-out) both;
+  animation-delay: calc(var(--viz-i, 0) * 8ms);
+}
+
+@keyframes rw-viz-bar-in {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes rw-viz-stroke-in {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes rw-viz-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rw-viz-area-in {
+  from {
+    fill-opacity: 0;
+  }
+  to {
+    fill-opacity: var(--rw-viz-area);
+  }
+}
+
+@keyframes rw-viz-spark-area-in {
+  from {
+    fill-opacity: 0;
+  }
+  to {
+    fill-opacity: 0.1;
+  }
+}
+
+.rw-bento--capturing .rw-tile-viz *,
+.rw-bento--capturing .rw-heatmap__cell--animate {
+  animation: none !important;
+  opacity: 1;
+  fill-opacity: var(--rw-viz-area);
+  stroke-dashoffset: 0;
+  transform: scaleY(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rw-chart-wire__guide,
+  .rw-chart-wire__stroke,
+  .rw-chart-wire__stem,
+  .rw-chart-wire__cap,
+  .rw-chart-wire__mark,
+  .rw-chart-wire__node,
+  .rw-chart-bars__stem,
+  .rw-chart-bars__cap,
+  .rw-chart-sparkline__line,
+  .rw-chart-sparkline__area,
+  .rw-chart-route__path,
+  .rw-chart-icon__stroke,
+  .rw-chart-icon__ring,
+  .rw-chart-icon__body,
+  .rw-chart-icon__wheel,
+  .rw-chart-icon__coin,
+  .rw-chart-pin__ring,
+  .rw-chart-pin__marker,
+  .rw-chart-download__frame,
+  .rw-chart-download__arrow,
+  .rw-heatmap__cell--animate {
+    animation: none !important;
+    opacity: 1;
+    fill-opacity: var(--rw-viz-area);
+    stroke-dashoffset: 0;
+    transform: scaleY(1);
   }
 }
 

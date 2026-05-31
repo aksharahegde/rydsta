@@ -186,6 +186,12 @@ function scheduleSync() {
 function ensureMap() {
   if (!containerRef.value || map) return
 
+  const { clientWidth, clientHeight } = containerRef.value
+  if (clientWidth < 2 || clientHeight < 2) {
+    requestAnimationFrame(ensureMap)
+    return
+  }
+
   const center = mapCenterForOverview(props.trips) ?? [77.59, 12.97]
 
   map = new maplibregl.Map({
@@ -200,7 +206,13 @@ function ensureMap() {
     renderWorldCopies: false,
   })
 
-  map.on('load', onStyleReady)
+  map.on('load', () => {
+    map?.resize()
+    onStyleReady()
+  })
+  map.on('error', (event) => {
+    console.error('[WrappedTripMap]', event.error ?? event)
+  })
   map.on('styledata', () => {
     if (!map?.isStyleLoaded()) return
     if (!layersReady) onStyleReady()

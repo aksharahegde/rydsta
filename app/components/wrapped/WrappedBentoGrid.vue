@@ -1,4 +1,17 @@
 <script setup lang="ts">
+import WrappedChartBars from '~/components/wrapped/charts/WrappedChartBars.vue'
+import WrappedChartDownload from '~/components/wrapped/charts/WrappedChartDownload.vue'
+import WrappedChartIcon from '~/components/wrapped/charts/WrappedChartIcon.vue'
+import WrappedChartPin from '~/components/wrapped/charts/WrappedChartPin.vue'
+import WrappedChartRoute from '~/components/wrapped/charts/WrappedChartRoute.vue'
+import WrappedChartSparkline from '~/components/wrapped/charts/WrappedChartSparkline.vue'
+import WrappedPersonalityGlyph from '~/components/wrapped/charts/WrappedPersonalityGlyph.vue'
+import {
+  hourTripCounts,
+  mapStatIconKind,
+  monthlyTripCounts,
+  weekdayTripCounts,
+} from '#shared/lib/bento-charts'
 import {
   getBentoHighlight,
   getBusiestInHero,
@@ -93,6 +106,11 @@ const busiestInHero = computed(() => getBusiestInHero(stats.value))
 const busiestTile = computed(() => getBusiestTile(stats.value))
 const highlight = computed(() => getBentoHighlight(stats.value))
 const mapStatTiles = computed(() => getMapStatTiles(stats.value))
+const vizAnimate = computed(() => !capturing.value)
+const mapMountKey = ref(0)
+const monthlyCounts = computed(() => monthlyTripCounts(props.trips, selectedYear.value))
+const weekdayCounts = computed(() => weekdayTripCounts(props.trips, selectedYear.value))
+const hourCounts = computed(() => hourTripCounts(props.trips, selectedYear.value))
 
 const warriorContent = computed(() => {
   if (spendLabel.value && !stats.value.busiestMonth) {
@@ -126,6 +144,7 @@ async function onDownload() {
   } finally {
     capturing.value = false
     downloading.value = false
+    mapMountKey.value += 1
   }
 }
 </script>
@@ -161,8 +180,21 @@ async function onDownload() {
         <!-- Hero stat (2×2) -->
         <article
           v-if="shouldShowHeroTile(stats)"
-          class="rw-tile rw-tile--stat"
+          class="rw-tile rw-tile--stat rw-tile--blueprint"
         >
+          <div
+            class="rw-tile-viz rw-tile-viz--band"
+            aria-hidden="true"
+          >
+            <WrappedChartBars
+              :key="selectedYear"
+              grid-id="hero-monthly"
+              :values="monthlyCounts"
+              :animate="vizAnimate"
+              :bar-width="4"
+              :gap="2"
+            />
+          </div>
           <p class="rw-tile-eyebrow">
             {{ stats.year }}
           </p>
@@ -193,6 +225,17 @@ async function onDownload() {
           :class="personalityTileClass"
         >
           <div
+            class="rw-tile-viz rw-tile-viz--personality"
+            aria-hidden="true"
+          >
+            <WrappedPersonalityGlyph
+              :key="selectedYear"
+              :personality="personality"
+              :hour-counts="hourCounts"
+              :animate="vizAnimate"
+            />
+          </div>
+          <div
             v-if="personality === 'Night Owl'"
             class="rw-stars"
             aria-hidden="true"
@@ -211,8 +254,18 @@ async function onDownload() {
         <!-- Top pickup -->
         <article
           v-if="shouldShowTopPickupTile(stats)"
-          class="rw-tile rw-tile--privacy"
+          class="rw-tile rw-tile--privacy rw-tile--blueprint"
         >
+          <div
+            class="rw-tile-viz rw-tile-viz--feature"
+            aria-hidden="true"
+          >
+            <WrappedChartPin
+              :key="selectedYear"
+              grid-id="top-pickup"
+              :animate="vizAnimate"
+            />
+          </div>
           <p class="rw-tile-eyebrow">
             Top pickup
           </p>
@@ -227,8 +280,21 @@ async function onDownload() {
         <!-- Busiest time -->
         <article
           v-if="busiestTile"
-          class="rw-tile rw-tile--providers"
+          class="rw-tile rw-tile--providers rw-tile--blueprint"
         >
+          <div
+            class="rw-tile-viz rw-tile-viz--band-sm"
+            aria-hidden="true"
+          >
+            <WrappedChartBars
+              :key="selectedYear"
+              grid-id="busiest-weekday"
+              :values="weekdayCounts"
+              :animate="vizAnimate"
+              :bar-width="6"
+              :gap="3"
+            />
+          </div>
           <p class="rw-tile-eyebrow">
             {{ busiestTile.eyebrow }}
           </p>
@@ -243,10 +309,22 @@ async function onDownload() {
           class="rw-tile rw-tile--map-stats"
         >
           <div
-            v-for="item in mapStatTiles"
+            v-for="(item, index) in mapStatTiles"
             :key="item.eyebrow"
             class="rw-map-stats__item"
           >
+            <div
+              class="rw-tile-viz rw-tile-viz--micro"
+              aria-hidden="true"
+            >
+              <WrappedChartIcon
+                :key="`${selectedYear}-${item.eyebrow}`"
+                :grid-id="`map-stat-${index}`"
+                :kind="mapStatIconKind(item.eyebrow)"
+                :animate="vizAnimate"
+                :style="{ '--viz-i': index }"
+              />
+            </div>
             <p class="rw-tile-eyebrow">
               {{ item.eyebrow }}
             </p>
@@ -262,6 +340,7 @@ async function onDownload() {
         <!-- Trip map -->
         <WrappedTripMapTile
           v-if="!capturing"
+          :key="`${selectedYear}-${mapMountKey}`"
           :trips="yearTrips"
           :year="selectedYear"
           @expand="mapExpanded = true"
@@ -279,18 +358,32 @@ async function onDownload() {
         </article>
 
         <!-- Activity heatmap -->
-        <article class="rw-tile rw-tile--heatmap">
+        <article class="rw-tile rw-tile--heatmap rw-tile--blueprint">
           <p class="rw-tile-eyebrow">
             Ride activity · {{ stats.year }}
           </p>
-          <WrappedActivityHeatmap :heatmap="heatmap" />
+          <WrappedActivityHeatmap
+            :key="selectedYear"
+            :heatmap="heatmap"
+            :animate="vizAnimate"
+          />
         </article>
 
         <!-- Trip highlight -->
         <article
           v-if="highlight"
-          class="rw-tile rw-tile--airport"
+          class="rw-tile rw-tile--airport rw-tile--blueprint"
         >
+          <div
+            class="rw-tile-viz rw-tile-viz--feature"
+            aria-hidden="true"
+          >
+            <WrappedChartRoute
+              :key="selectedYear"
+              grid-id="trip-highlight"
+              :animate="vizAnimate"
+            />
+          </div>
           <p class="rw-tile-eyebrow">
             {{ highlight.title }}
           </p>
@@ -306,7 +399,18 @@ async function onDownload() {
         </article>
 
         <!-- Secondary stat / tagline -->
-        <article class="rw-tile rw-tile--warrior">
+        <article class="rw-tile rw-tile--warrior rw-tile--blueprint">
+          <div
+            class="rw-tile-viz rw-tile-viz--band-sm"
+            aria-hidden="true"
+          >
+            <WrappedChartSparkline
+              :key="selectedYear"
+              grid-id="warrior-spark"
+              :values="monthlyCounts"
+              :animate="vizAnimate"
+            />
+          </div>
           <p class="rw-tile-persona--sm">
             {{ warriorContent.title }}
           </p>
@@ -316,7 +420,17 @@ async function onDownload() {
         </article>
 
         <!-- Download CTA -->
-        <article class="rw-tile rw-tile--cta">
+        <article class="rw-tile rw-tile--cta rw-tile--blueprint rw-tile--blueprint-dark">
+          <div
+            class="rw-tile-viz rw-tile-viz--cta"
+            aria-hidden="true"
+          >
+            <WrappedChartDownload
+              :key="selectedYear"
+              grid-id="download-cta"
+              :animate="vizAnimate"
+            />
+          </div>
           <div class="rw-tile--cta-actions">
             <p class="rw-cta-heading">
               Share your wrapped

@@ -142,11 +142,11 @@ export function getBentoHighlight(stats: WrappedStats): BentoHighlight | null {
 export function getPersonalityTileClass(personality: string): string {
   switch (personality) {
     case 'Night Owl':
-      return 'rw-tile--night'
+      return 'rw-tile--personality rw-tile--night'
     case 'Airport Regular':
-      return 'rw-tile--personality-airport'
+      return 'rw-tile--personality rw-tile--personality-airport'
     default:
-      return 'rw-tile--personality-warrior'
+      return 'rw-tile--personality rw-tile--personality-warrior'
   }
 }
 
