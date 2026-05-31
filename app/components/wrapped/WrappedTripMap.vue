@@ -395,10 +395,9 @@ function syncPlayback() {
 
   fitCamera(48)
 
-  map.once('idle', () => {
-    if (settleGen !== playbackSyncGen) return
+  if (settleGen === playbackSyncGen) {
     emit('playbackSettled', settledIndex)
-  })
+  }
 }
 
 function syncMap() {

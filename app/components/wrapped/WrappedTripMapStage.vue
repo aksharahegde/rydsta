@@ -37,17 +37,14 @@ const {
 
 const speedOptions = PLAYBACK_SPEED_OPTIONS
 
-const MAP_WARMUP_MS = 700
 const MESSAGE_CYCLE_MS = 2200
 
 const mapRef = ref<{ zoomIn: () => void; zoomOut: () => void; fitView: () => void; replayArc: () => void } | null>(null)
 const mapReady = ref(false)
 const initialPlaybackReady = ref(false)
 const initialLoadDone = ref(false)
-const playWarmup = ref(false)
 const messageIndex = ref(0)
 
-let warmupTimer: ReturnType<typeof setTimeout> | null = null
 let messageTimer: ReturnType<typeof setInterval> | null = null
 
 // ── Swipe gesture state ───────────────────────────────────────────
@@ -136,18 +133,12 @@ const showPlaybackOverlay = computed(
   () =>
     !initialLoadDone.value
     && isPlaying.value
-    && (playWarmup.value
-      || !mapReady.value
-      || !initialPlaybackReady.value),
+    && (!mapReady.value || !initialPlaybackReady.value),
 )
 
 const playbackMessage = computed(() =>
   mapPlaybackMessageAt(messageIndex.value),
 )
-
-function clearWarmupTimer() {
-  if (warmupTimer !== null) { clearTimeout(warmupTimer); warmupTimer = null }
-}
 
 function clearMessageTimer() {
   if (messageTimer !== null) { clearInterval(messageTimer); messageTimer = null }
@@ -158,19 +149,11 @@ function startMessageCycle() {
   messageTimer = setInterval(() => { messageIndex.value += 1 }, MESSAGE_CYCLE_MS)
 }
 
-function beginPlayWarmup() {
-  playWarmup.value = true
-  clearWarmupTimer()
-  warmupTimer = setTimeout(() => { playWarmup.value = false; warmupTimer = null }, MAP_WARMUP_MS)
-}
-
 function resetOverlayState() {
   mapReady.value = false
   initialPlaybackReady.value = false
   initialLoadDone.value = false
-  playWarmup.value = false
   messageIndex.value = 0
-  clearWarmupTimer()
   clearMessageTimer()
 }
 
@@ -183,7 +166,7 @@ function onPlaybackSettled() {
 function markInitialLoadDone() {
   if (initialLoadDone.value) return
   if (!isPlaying.value) return
-  if (playWarmup.value || !mapReady.value || !initialPlaybackReady.value) return
+  if (!mapReady.value || !initialPlaybackReady.value) return
   initialLoadDone.value = true
 }
 
@@ -192,16 +175,7 @@ watch(showPlaybackOverlay, (visible) => {
   else clearMessageTimer()
 })
 
-watch(isPlaying, (playing) => {
-  if (playing) {
-    if (!initialLoadDone.value) beginPlayWarmup()
-    return
-  }
-  playWarmup.value = false
-  clearWarmupTimer()
-})
-
-watch([mapReady, initialPlaybackReady, playWarmup, isPlaying], markInitialLoadDone)
+watch([mapReady, initialPlaybackReady, isPlaying], markInitialLoadDone)
 
 function onSpeedChange(event: Event) {
   const value = Number((event.target as HTMLSelectElement).value)
