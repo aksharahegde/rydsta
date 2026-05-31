@@ -204,7 +204,7 @@ const warriorOpacities = [0.72, 0.45, 0.28, 0.18]
       <path
         v-for="(d, i) in warriorPaths"
         :key="`wp-${i}`"
-        class="rw-chart-personality__warrior-route rw-chart-wire__stroke"
+        class="rw-chart-personality__warrior-route"
         pathLength="1"
         :d="d"
         :style="{
@@ -269,9 +269,18 @@ const warriorOpacities = [0.72, 0.45, 0.28, 0.18]
   fill: var(--rw-personality-glow);
 }
 
-/* Road Warrior multi-route opacity */
+/* Road Warrior multi-route: explicit amber stroke, not inherited wire color */
 .rw-chart-personality__warrior-route {
-  opacity: var(--warrior-op, 0.4);
+  fill: none;
+  stroke: var(--rw-personality-glow);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: var(--warrior-op, 0.6);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: rw-viz-stroke-in 900ms var(--ease-out) both;
 }
 
 /* Static fallback */

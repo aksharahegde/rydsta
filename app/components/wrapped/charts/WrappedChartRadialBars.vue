@@ -96,10 +96,22 @@ const peakDot = computed(() => {
       </radialGradient>
     </defs>
 
-    <!-- Arc segments -->
+    <!-- Guide arcs for all slots (always visible at low opacity) — give structure to sparse data -->
     <template
       v-for="(norm, i) in normalized"
-      :key="i"
+      :key="`guide-${i}`"
+    >
+      <path
+        class="rw-chart-radial__arc rw-chart-radial__arc--guide"
+        :d="arcPath(i, 0.08)"
+        :style="{ '--viz-i': i }"
+      />
+    </template>
+
+    <!-- Data arcs — rendered on top of guides -->
+    <template
+      v-for="(norm, i) in normalized"
+      :key="`data-${i}`"
     >
       <path
         v-if="norm > 0"
@@ -127,6 +139,15 @@ const peakDot = computed(() => {
 </template>
 
 <style scoped>
+/* Guide arcs: always-present thin rings showing all month slots */
+.rw-chart-radial__arc--guide {
+  fill: var(--rw-viz-amber);
+  fill-opacity: 0.07;
+  stroke: none;
+  opacity: 1;
+  animation: rw-viz-fade-in 300ms var(--ease-out) 50ms both;
+}
+
 .rw-chart-radial__arc {
   fill: var(--rw-viz-amber);
   fill-opacity: var(--arc-opacity, 0.3);

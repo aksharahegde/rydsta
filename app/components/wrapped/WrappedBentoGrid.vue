@@ -259,7 +259,7 @@ async function onDownload() {
           class="rw-tile rw-tile--privacy rw-tile--blueprint"
         >
           <div
-            class="rw-tile-viz rw-tile-viz--feature"
+            class="rw-tile-viz rw-tile-viz--ping"
             aria-hidden="true"
           >
             <WrappedChartPin
