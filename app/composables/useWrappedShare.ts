@@ -19,8 +19,9 @@ export async function downloadSharePng(
     pixelRatio: 2,
     width,
     height,
-    canvasWidth: width,
-    canvasHeight: height,
+    canvasWidth: width * 2,
+    canvasHeight: height * 2,
+    cacheBust: true,
   })
 
   const anchor = document.createElement('a')

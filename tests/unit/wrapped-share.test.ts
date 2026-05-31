@@ -30,8 +30,9 @@ describe('downloadSharePng', () => {
       pixelRatio: 2,
       width: 1080,
       height: 1920,
-      canvasWidth: 1080,
-      canvasHeight: 1920,
+      canvasWidth: 2160,
+      canvasHeight: 3840,
+      cacheBust: true,
     })
     expect(anchor.download).toMatch(/^rydsta-\d{4}\.png$/)
     expect(click).toHaveBeenCalledOnce()

@@ -38,7 +38,6 @@ import {
 import type { Trip } from '#shared/types/trip'
 
 const EXPORT_WIDTH = 1400
-const EXPORT_HEIGHT = 1050
 
 const props = defineProps<{
   trips: Trip[]
@@ -134,6 +133,16 @@ function onSelectYear(year: number) {
   selectedYear.value = year
 }
 
+async function waitForExportLayout() {
+  await nextTick()
+  await new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  })
+  if (typeof document !== 'undefined' && document.fonts?.ready) {
+    await document.fonts.ready
+  }
+}
+
 async function onDownload() {
   const el = exportRef.value
   if (!el || downloading.value) return
@@ -141,9 +150,11 @@ async function onDownload() {
   downloading.value = true
   capturing.value = true
   try {
+    await waitForExportLayout()
+    const height = Math.ceil(el.scrollHeight)
     await downloadSharePng(el, {
       width: EXPORT_WIDTH,
-      height: EXPORT_HEIGHT,
+      height,
       filename: `rydsta-${selectedYear.value}.png`,
     })
   } finally {
@@ -339,24 +350,18 @@ async function onDownload() {
         </article>
 
         <!-- Trip map -->
+        <WrappedTripMapExportPreview
+          v-if="capturing && tripsWithCoordinates(yearTrips).length > 0"
+          :trips="yearTrips"
+          :year="selectedYear"
+        />
         <WrappedTripMapTile
-          v-if="!capturing"
+          v-else-if="!capturing"
           :key="`${selectedYear}-${mapMountKey}`"
           :trips="yearTrips"
           :year="selectedYear"
           @expand="mapExpanded = true"
         />
-        <article
-          v-else
-          class="rw-tile rw-tile--trip-map rw-tile--trip-map--placeholder"
-        >
-          <p class="rw-tile-eyebrow">
-            Your routes · {{ stats.year }}
-          </p>
-          <p class="rw-tile-tagline">
-            Map preview ({{ tripsWithCoordinates(yearTrips).length }} trips)
-          </p>
-        </article>
 
         <!-- Activity heatmap -->
         <article class="rw-tile rw-tile--heatmap rw-tile--blueprint">

@@ -450,8 +450,75 @@
   font-weight: 600;
 }
 
-.rw-tile--trip-map--placeholder {
-  min-height: 6rem;
+.rw-tile--trip-map--export {
+  pointer-events: none;
+}
+
+.rw-tile--trip-map-body--export {
+  cursor: default;
+}
+
+.rw-tile--trip-map-body--export .rw-tile--trip-map-overlay {
+  background: linear-gradient(
+    180deg,
+    oklch(98% 0.01 95 / 0.82) 0%,
+    oklch(98% 0.01 95 / 0) 32%,
+    oklch(98% 0.01 95 / 0) 68%,
+    oklch(98% 0.01 95 / 0.45) 100%
+  );
+}
+
+.dark .rw-tile--trip-map-body--export .rw-tile--trip-map-overlay {
+  background: linear-gradient(
+    180deg,
+    oklch(18% 0.02 264 / 0.78) 0%,
+    oklch(18% 0.02 264 / 0) 32%,
+    oklch(18% 0.02 264 / 0) 68%,
+    oklch(18% 0.02 264 / 0.55) 100%
+  );
+}
+
+.rw-trip-map-export {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-paper-2);
+}
+
+.rw-trip-map-export__arc {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1.25;
+  stroke-opacity: 0.22;
+}
+
+.rw-trip-map-export__pickup {
+  fill: var(--color-accent);
+  stroke: var(--color-paper);
+  stroke-width: 1;
+}
+
+.rw-trip-map-export__dropoff {
+  fill: var(--color-ink);
+  stroke: var(--color-accent);
+  stroke-width: 0.75;
+  fill-opacity: 0.55;
+}
+
+.rw-bento--capturing .rw-trip-map-export__arc {
+  stroke: #1c2233;
+  stroke-opacity: 0.2;
+}
+
+.rw-bento--capturing .rw-trip-map-export__pickup {
+  fill: #c88a2e;
+  stroke: #f8f6f2;
+}
+
+.rw-bento--capturing .rw-trip-map-export__dropoff {
+  fill: #1c2233;
+  stroke: #c88a2e;
 }
 
 .rw-tile--airport {
