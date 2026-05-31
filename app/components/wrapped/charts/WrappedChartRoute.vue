@@ -26,6 +26,8 @@ const patternId = computed(() => props.gridId ?? `rw-route${uid}`)
       :width="120"
       :height="72"
     />
+
+    <!-- Guide lines at endpoints -->
     <line
       class="rw-chart-wire__guide"
       x1="12"
@@ -40,6 +42,25 @@ const patternId = computed(() => props.gridId ?? `rw-route${uid}`)
       x2="86"
       y2="12"
     />
+
+    <!-- Topographic contour lines (offset parallels, decreasing opacity) -->
+    <path
+      class="rw-chart-route__contour rw-chart-route__contour--3"
+      pathLength="1"
+      d="M12 62 C 38 30, 68 58, 108 18"
+    />
+    <path
+      class="rw-chart-route__contour rw-chart-route__contour--2"
+      pathLength="1"
+      d="M12 60 C 38 27, 68 55, 108 15"
+    />
+    <path
+      class="rw-chart-route__contour rw-chart-route__contour--1"
+      pathLength="1"
+      d="M12 56 C 38 20, 68 50, 108 9"
+    />
+
+    <!-- Main route path -->
     <circle
       class="rw-chart-wire__node"
       cx="12"
@@ -59,3 +80,56 @@ const patternId = computed(() => props.gridId ?? `rw-route${uid}`)
     />
   </svg>
 </template>
+
+<style scoped>
+@keyframes rw-contour-in-hi {
+  from { stroke-dashoffset: 1; opacity: 0; }
+  to   { stroke-dashoffset: 0; opacity: 0.25; }
+}
+
+@keyframes rw-contour-in-md {
+  from { stroke-dashoffset: 1; opacity: 0; }
+  to   { stroke-dashoffset: 0; opacity: 0.15; }
+}
+
+@keyframes rw-contour-in-lo {
+  from { stroke-dashoffset: 1; opacity: 0; }
+  to   { stroke-dashoffset: 0; opacity: 0.08; }
+}
+
+.rw-chart-route__contour {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+}
+
+.rw-chart-route__contour--1 {
+  stroke-width: 0.75;
+  animation: rw-contour-in-hi 950ms var(--ease-out) 120ms both;
+}
+
+.rw-chart-route__contour--2 {
+  stroke-width: 0.5;
+  animation: rw-contour-in-md 950ms var(--ease-out) 60ms both;
+}
+
+.rw-chart-route__contour--3 {
+  stroke-width: 0.35;
+  animation: rw-contour-in-lo 950ms var(--ease-out) 0ms both;
+}
+
+.rw-chart-route--static .rw-chart-route__contour--1 {
+  animation: none; stroke-dashoffset: 0; opacity: 0.25;
+}
+.rw-chart-route--static .rw-chart-route__contour--2 {
+  animation: none; stroke-dashoffset: 0; opacity: 0.15;
+}
+.rw-chart-route--static .rw-chart-route__contour--3 {
+  animation: none; stroke-dashoffset: 0; opacity: 0.08;
+}
+</style>

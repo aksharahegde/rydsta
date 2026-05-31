@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import WrappedChartWireGrid from '~/components/wrapped/charts/WrappedChartWireGrid.vue'
-
-const props = withDefaults(
+withDefaults(
   defineProps<{
     animate?: boolean
     gridId?: string
   }>(),
   { animate: true },
 )
-
-const uid = useId()
-const patternId = computed(() => props.gridId ?? `rw-pin${uid}`)
 </script>
 
 <template>
@@ -18,38 +13,82 @@ const patternId = computed(() => props.gridId ?? `rw-pin${uid}`)
     class="rw-chart-pin"
     :class="{ 'rw-chart-pin--static': !animate }"
     viewBox="0 0 80 80"
-    preserveAspectRatio="xMidYMax meet"
+    preserveAspectRatio="xMidYMid meet"
     aria-hidden="true"
   >
-    <WrappedChartWireGrid
-      :id="patternId"
-      :width="80"
-      :height="80"
+    <!-- Radar ping rings — scale out and fade -->
+    <circle
+      class="rw-chart-ping__ring"
+      cx="40"
+      cy="40"
+      r="30"
+      :style="{ '--ping-delay': '0ms' }"
     />
     <circle
-      class="rw-chart-pin__ring"
-      :style="{ '--viz-i': 0 }"
+      class="rw-chart-ping__ring"
       cx="40"
-      cy="32"
-      r="22"
+      cy="40"
+      r="30"
+      :style="{ '--ping-delay': '600ms' }"
     />
     <circle
-      class="rw-chart-pin__ring"
-      :style="{ '--viz-i': 1 }"
+      class="rw-chart-ping__ring"
       cx="40"
-      cy="32"
+      cy="40"
+      r="30"
+      :style="{ '--ping-delay': '1200ms' }"
+    />
+
+    <!-- Center fill dot -->
+    <circle
+      class="rw-chart-ping__dot"
+      cx="40"
+      cy="40"
+      r="5"
+    />
+
+    <!-- Inner filled ring -->
+    <circle
+      class="rw-chart-ping__inner"
+      cx="40"
+      cy="40"
       r="12"
-    />
-    <path
-      class="rw-chart-pin__marker"
-      pathLength="1"
-      d="M40 12 C30 12 22 20 22 30 C22 42 40 66 40 66 C40 66 58 42 58 30 C58 20 50 12 40 12 Z"
-    />
-    <circle
-      class="rw-chart-wire__node rw-chart-wire__node--glow"
-      cx="40"
-      cy="28"
-      r="2.5"
     />
   </svg>
 </template>
+
+<style scoped>
+.rw-chart-ping__ring {
+  fill: none;
+  stroke: var(--rw-viz-amber, var(--color-accent));
+  stroke-width: 1.5;
+  transform-origin: 40px 40px;
+  opacity: 0;
+  animation: rw-viz-ping-ring 2.4s var(--ease-out) infinite;
+  animation-delay: var(--ping-delay, 0ms);
+}
+
+.rw-chart-ping__dot {
+  fill: var(--rw-viz-amber, var(--color-accent));
+  opacity: 0.85;
+  animation: rw-viz-ping-dot 2.4s ease-in-out infinite;
+}
+
+.rw-chart-ping__inner {
+  fill: none;
+  stroke: var(--rw-viz-amber, var(--color-accent));
+  stroke-width: 1;
+  opacity: 0.28;
+}
+
+/* Static export: just show the rings at final state */
+.rw-chart-pin--static .rw-chart-ping__ring {
+  animation: none;
+  transform: scale(1);
+  opacity: 0.2;
+}
+
+.rw-chart-pin--static .rw-chart-ping__dot {
+  animation: none;
+}
+</style>
