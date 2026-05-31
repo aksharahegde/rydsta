@@ -24,3 +24,6 @@ logs
 !.env.example
 test-results/
 .vercel
+.playwright-mcp/
+*.png
+!public/**/*.png
