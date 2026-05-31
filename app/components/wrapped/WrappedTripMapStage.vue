@@ -172,6 +172,15 @@ watch(showPlaybackOverlay, (visible) => {
 
 watch([mapReady, initialPlaybackReady, isPlaying], markInitialLoadDone)
 
+watch(isPlaying, (playing) => {
+  if (playing) initialPlaybackReady.value = false
+})
+
+watch(() => props.year, () => {
+  resetOverlayState()
+  reset()
+})
+
 function onSpeedChange(event: Event) {
   const value = Number((event.target as HTMLSelectElement).value)
   if (isPlaybackSpeed(value)) setPlaybackSpeed(value)
@@ -257,6 +266,7 @@ onUnmounted(() => {
         <ClientOnly>
           <WrappedTripMap
             v-if="hasTrips"
+            :key="year"
             ref="mapRef"
             :trips="playbackTrips"
             mode="playback"

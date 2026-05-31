@@ -71,6 +71,7 @@ const mapExpanded = ref(false)
 
 watch(selectedYear, () => {
   mapExpanded.value = false
+  mapMountKey.value += 1
 })
 
 const personalityTileClass = computed(() =>
@@ -457,6 +458,7 @@ async function onDownload() {
 
     <WrappedTripMapStage
       v-if="mapExpanded"
+      :key="selectedYear"
       :trips="yearTrips"
       :year="selectedYear"
       @close="mapExpanded = false"

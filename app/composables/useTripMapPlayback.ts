@@ -104,7 +104,7 @@ export function useTripMapPlayback(tripsSource: Ref<Trip[]>) {
     if (currentIndex.value > list.length - 1) {
       currentIndex.value = list.length - 1
     }
-  })
+  }, { immediate: true })
 
   onUnmounted(() => {
     clearTimer()

@@ -63,6 +63,14 @@ let layersReady = false
 const coordTrips = computed(() => tripsWithCoordinates(props.trips))
 const overviewTrips = computed(() => tripsForMapOverview(props.trips))
 
+const tripsSyncKey = computed(() => {
+  const trips = props.trips
+  if (trips.length === 0) return 'empty'
+  const first = trips[0]!.startedAt.getTime()
+  const last = trips[trips.length - 1]!.startedAt.getTime()
+  return `${trips.length}:${first}:${last}`
+})
+
 const routeColor = computed(() => (isDark.value ? '#f8f6f2' : '#1c2233'))
 
 function mapStyleUrl(): string {
@@ -269,9 +277,12 @@ function fitCamera(padding = 40) {
   if (!map) return
 
   const isActivePlaybackTrip = props.mode === 'playback' && props.isPlaying
+  const showAllCoordPoints = props.mode === 'playback' && !props.isPlaying
   const bounds = isActivePlaybackTrip
     ? boundsForTrip(coordTrips.value[props.activeIndex]!)
-    : boundsForOverview(props.trips)
+    : showAllCoordPoints
+      ? boundsForTrips(coordTrips.value)
+      : boundsForOverview(props.trips)
 
   if (bounds) {
     map.fitBounds(bounds, {
@@ -287,7 +298,14 @@ function fitCamera(padding = 40) {
     return
   }
 
-  const center = mapCenterForOverview(props.trips)
+  const center = showAllCoordPoints
+    ? (() => {
+        const b = boundsForTrips(coordTrips.value)
+        return b
+          ? [(b[0][0] + b[1][0]) / 2, (b[0][1] + b[1][1]) / 2] as [number, number]
+          : null
+      })()
+    : mapCenterForOverview(props.trips)
   if (center) {
     map.flyTo({
       center,
@@ -304,7 +322,8 @@ function syncOverview() {
 
   updateRouteColor()
 
-  setGeoJson('trip-points', allTripPointsGeoJson(overviewTrips.value))
+  const pointTrips = props.mode === 'playback' ? coordTrips.value : overviewTrips.value
+  setGeoJson('trip-points', allTripPointsGeoJson(pointTrips))
   setGeoJson('trip-arc', { type: 'FeatureCollection', features: [] })
   setGeoJson('trip-active-pickup', { type: 'FeatureCollection', features: [] })
   setGeoJson('trip-active-dropoff', { type: 'FeatureCollection', features: [] })
@@ -338,6 +357,7 @@ function syncPlayback() {
   const trip = coordTrips.value[props.activeIndex]
   if (!trip) {
     setGeoJson('trip-arc', { type: 'FeatureCollection', features: [] })
+    if (settleGen === playbackSyncGen) emit('playbackSettled', settledIndex)
     return
   }
 
@@ -424,8 +444,9 @@ function reloadStyle() {
 }
 
 watch(
-  () => [props.trips.length, props.activeIndex, props.mode, props.isPlaying] as const,
-  ([, index], [, prevIndex]) => {
+  () => [tripsSyncKey.value, props.activeIndex, props.mode, props.isPlaying] as const,
+  ([key, index], [prevKey, prevIndex]) => {
+    if (key !== prevKey) hasEmittedReady = false
     if (index !== prevIndex) lastPlaybackArcIndex = -1
     scheduleSync()
   },
@@ -476,6 +497,7 @@ onUnmounted(() => {
   map?.remove()
   map = null
   layersReady = false
+  hasEmittedReady = false
   lastPlaybackArcIndex = -1
 })
 </script>
