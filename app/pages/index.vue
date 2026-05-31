@@ -10,12 +10,12 @@ import LandingPreviewStats from '~/components/landing/LandingPreviewStats.vue'
 import LandingPreviewTripMap from '~/components/landing/LandingPreviewTripMap.vue'
 import LandingPreviewTripStats from '~/components/landing/LandingPreviewTripStats.vue'
 import LandingPreviewUpload from '~/components/landing/LandingPreviewUpload.vue'
-import LandingProviderStrip from '~/components/landing/LandingProviderStrip.vue'
+
 
 const year = new Date().getFullYear()
 
 const description =
-  'Turn your Uber, Ola, and Rapido trip exports into a shareable year-in-rides story. 100% in your browser.'
+  'Turn your ride history into a shareable year-in-rides story. Supports CSV, XLSX, and ZIP exports. 100% in your browser.'
 
 useSeoMeta({
   title: 'Rydsta — Your rides, by the numbers',
@@ -56,7 +56,7 @@ useSeoMeta({
       class="rw-hero rw-content"
       data-testid="landing-hero"
     >
-      <p class="rw-hero-tag">Uber · Ola · Rapido</p>
+      <p class="rw-hero-tag">CSV · XLSX · ZIP</p>
       <h1 class="rw-hero-head">Your year<br>in rides<span class="rw-hero-head__dot">.</span></h1>
       <p class="rw-hero-sub">
         Drop an export. Get a shareable story.
@@ -150,7 +150,7 @@ useSeoMeta({
       <LandingFeatureCard
         variant="rw-landing-card--upload"
         title="Drop your export"
-        description="CSV, XLSX, or ZIP. Drag and drop from Uber, Ola, or Rapido."
+        description="CSV, XLSX, or ZIP. Drag and drop from any ride app."
       >
         <LandingPreviewUpload />
       </LandingFeatureCard>
@@ -197,8 +197,6 @@ useSeoMeta({
         </div>
       </LandingFeatureCard>
     </section>
-
-    <LandingProviderStrip />
 
     <footer class="rw-footer">
       <div class="rw-content">

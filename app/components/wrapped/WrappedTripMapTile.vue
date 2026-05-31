@@ -88,7 +88,7 @@ function onExpandKeydown(event: KeyboardEvent) {
         </p>
       </div>
       <p class="rw-tile--trip-map-empty">
-        Upload an Uber rider export with latitude and longitude columns to see your routes.
+        Upload an export with latitude and longitude columns to see your routes.
         <NuxtLink
           to="/upload"
           class="rw-tile--trip-map-upload"
