@@ -566,7 +566,7 @@
 
 /* ── About page ──────────────────────────────────────────────── */
 .rw-about {
-  padding-block: var(--space-2xl) var(--space-3xl);
+  padding-block: var(--space-3xl) var(--space-3xl);
 }
 
 /* Section tag (eyebrow) */
@@ -582,27 +582,27 @@
 /* Section heading */
 .rw-about__heading {
   font-family: var(--font-display);
-  font-size: clamp(var(--text-2xl), 5vw, var(--text-4xl));
+  font-size: clamp(var(--text-3xl), 7vw, var(--text-display));
   font-weight: 800;
-  line-height: 1.05;
+  line-height: 1.0;
   letter-spacing: -0.04em;
   color: var(--color-ink);
-  margin: 0 0 var(--space-sm);
+  margin: 0 0 var(--space-md);
 }
 
 .rw-about__sub {
   font-size: var(--text-md);
   color: var(--color-ink-2);
-  line-height: 1.55;
-  margin: 0 0 var(--space-xs);
-  max-width: 38ch;
+  line-height: 1.6;
+  margin: 0 0 var(--space-sm);
+  max-width: 44ch;
 }
 
 /* Horizontal rule dividers */
 .rw-about__rule {
   border: none;
   border-top: 1px solid var(--color-rule);
-  margin: var(--space-xl) 0;
+  margin: var(--space-2xl) 0;
 }
 
 /* Section label + body block */

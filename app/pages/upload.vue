@@ -66,6 +66,9 @@ async function onFilesSelected(files: File[]) {
     var(--color-paper);
   color: var(--color-ink);
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .upload-page__header {
@@ -74,8 +77,10 @@ async function onFilesSelected(files: File[]) {
 
 .upload-page h1 {
   margin: 0 0 0.5rem;
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--color-ink);
 }
 
