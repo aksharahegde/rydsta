@@ -60,7 +60,7 @@ useSeoMeta({
       <h1 class="rw-hero-head">Your year<br>in rides.</h1>
       <p class="rw-hero-sub">
         Drop an export. Get a shareable story.
-        No account — everything runs in your browser.
+        No account. Everything runs in your browser.
       </p>
       <div class="rw-hero-actions">
         <NuxtLink
@@ -102,7 +102,7 @@ useSeoMeta({
       <LandingFeatureCard
         variant="rw-landing-card--stats"
         title="Your ride totals"
-        description="Trips, spend, and your busiest month — pulled straight from your export."
+        description="Trips, spend, and your busiest month. Pulled straight from your export."
       >
         <LandingPreviewStats />
       </LandingFeatureCard>
@@ -110,15 +110,15 @@ useSeoMeta({
       <LandingFeatureCard
         variant="rw-landing-card--personality"
         title="Your rider archetype"
-        description="Night Owl, Airport Regular, Road Warrior — we match your ride patterns."
+        description="Night Owl, Airport Regular, Road Warrior. We figure out which one fits you."
       >
         <LandingPreviewPersonality />
       </LandingFeatureCard>
 
       <LandingFeatureCard
         variant="rw-landing-card--trip-stats"
-        title="From your export"
-        description="Distance, city, ride type, and fare — mined from trips_data columns."
+        title="The full picture"
+        description="Distance, city, ride type, and fare. Everything your app buried in the data."
       >
         <LandingPreviewTripStats />
       </LandingFeatureCard>
@@ -134,7 +134,7 @@ useSeoMeta({
       <LandingFeatureCard
         variant="rw-landing-card--privacy"
         title="Private by design"
-        description="Your export is parsed locally. Nothing is uploaded to a server."
+        description="Your export never leaves your browser. We never see it."
       >
         <LandingPreviewPrivacy />
       </LandingFeatureCard>
@@ -150,7 +150,7 @@ useSeoMeta({
       <LandingFeatureCard
         variant="rw-landing-card--upload"
         title="Drop your export"
-        description="CSV, XLSX, or ZIP — drag and drop from Uber, Ola, or Rapido."
+        description="CSV, XLSX, or ZIP. Drag and drop from Uber, Ola, or Rapido."
       >
         <LandingPreviewUpload />
       </LandingFeatureCard>
@@ -158,7 +158,7 @@ useSeoMeta({
       <LandingFeatureCard
         variant="rw-landing-card--routes"
         title="Memorable routes"
-        description="Top pickup and dropoff spots that tell your year’s story."
+        description="The spots you kept coming back to, and the routes that defined your year."
       >
         <LandingPreviewRoutes />
       </LandingFeatureCard>
@@ -166,7 +166,7 @@ useSeoMeta({
       <LandingFeatureCard
         variant="rw-landing-card--share"
         title="Share your wrapped"
-        description="Download a landscape PNG of your bento card to post anywhere."
+        description="One PNG, ready to drop into Stories, Tweets, or your group chat."
       >
         <LandingPreviewShare />
       </LandingFeatureCard>

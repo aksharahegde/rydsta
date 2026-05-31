@@ -27,9 +27,10 @@ async function onFilesSelected(files: File[]) {
     <RidePageNav current="Upload" />
 
     <header class="upload-page__header">
-      <h1>Upload your rides</h1>
+      <h1>Drop your export</h1>
       <p class="upload-page__lede">
-        Import an export from Uber, Ola, or Rapido. Everything stays on your device—we never upload your files.
+        Grab an export from Uber, Ola, or Rapido and drop it here.
+        Everything stays on your device. We never touch your files.
       </p>
     </header>
 
@@ -50,7 +51,7 @@ async function onFilesSelected(files: File[]) {
     </p>
 
     <p class="upload-page__privacy">
-      Your trip data is parsed locally in your browser. No account, no server upload.
+      Parsed locally. No account. No upload. Just your rides.
     </p>
   </main>
 </template>

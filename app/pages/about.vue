@@ -45,8 +45,8 @@ useSeoMeta({
         <p class="rw-about__tag">About</p>
         <h1 class="rw-about__heading">Ride Wrapped</h1>
         <p class="rw-about__sub">
-          A Spotify Wrapped for your rides, built for Uber,
-          Ola, and Rapido users in India.
+          Your ride history has a story in it. Ride Wrapped finds it,
+          built for Uber, Ola, and Rapido riders across India.
         </p>
         <p class="rw-about__sub">
           Drop an export. See your year as a shareable visual story:
@@ -70,9 +70,9 @@ useSeoMeta({
             </div>
             <div class="rw-about__step">
               <p class="rw-about__step-num">2</p>
-              <p class="rw-about__step-title">Parsed in your browser</p>
+              <p class="rw-about__step-title">Stays on your device</p>
               <p class="rw-about__step-body">
-                A Web Worker reads and processes your file locally.
+                Your file is read and processed entirely locally.
                 No upload, no account, no server. Ever.
               </p>
             </div>
