@@ -31,7 +31,7 @@ describe('pickPersonality', () => {
       trip({ startedAt: localStartedAt(5, 2, 2) }),
       trip({ startedAt: localStartedAt(5, 3, 10) }),
     ]
-    const stats = computeWrappedStats(trips)
+    const stats = computeWrappedStats(trips, 2025)
     expect(pickPersonality(stats, trips)).toBe('Night Owl')
   })
 
@@ -44,7 +44,7 @@ describe('pickPersonality', () => {
       }),
       trip({ startedAt: localStartedAt(5, 2, 11) }),
     ]
-    const stats = computeWrappedStats(trips)
+    const stats = computeWrappedStats(trips, 2025)
     expect(pickPersonality(stats, trips)).toBe('Airport Regular')
   })
 
@@ -53,7 +53,7 @@ describe('pickPersonality', () => {
       trip({ startedAt: localStartedAt(5, 1, 10) }),
       trip({ startedAt: localStartedAt(5, 2, 14) }),
     ]
-    const stats = computeWrappedStats(trips)
+    const stats = computeWrappedStats(trips, 2025)
     expect(pickPersonality(stats, trips)).toBe('Road Warrior')
   })
 })

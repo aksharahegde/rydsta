@@ -9,7 +9,7 @@
 
 ## 1. Problem & product
 
-Users export trip data from ride apps (Uber, Ola, Rapido, etc.) as CSV, XLSX, or ZIP archives with inconsistent folder names, file names, and column headers. Ride Wrapped turns that export into a **short, full-screen, shareable story** (stats + personality + export image)—entirely in the browser.
+Users export trip data from ride apps (Uber, Ola, Rapido, etc.) as CSV, XLSX, or ZIP archives with inconsistent folder names, file names, and column headers. Ride Wrapped turns that export into a **single-page bento grid** (stats + personality + export image)—entirely in the browser.
 
 ### Non-goals (v1)
 
@@ -22,8 +22,8 @@ Users export trip data from ride apps (Uber, Ola, Rapido, etc.) as CSV, XLSX, or
 ### Success criteria
 
 1. User uploads a supported export without creating an account.
-2. App produces a 6–8 slide story with at least total trips and total spend when data exists.
-3. User can download a share image (1080×1920 and/or 1080×1080).
+2. App produces a single bento page with at least total trips and total spend when data exists.
+3. User can download a share image (landscape PNG of the bento grid).
 4. No user trip data is sent to application servers.
 
 ---
@@ -44,8 +44,8 @@ flowchart LR
 | Landing | `/` | Value prop, privacy promise, CTA |
 | Upload | `/upload` | Drop zone, progress, errors |
 | Map (conditional) | `/map` | Confirm column mapping only when needed |
-| Story | `/wrapped` | Full-screen slide player |
-| Share | Finale on `/wrapped` | Download composite PNG |
+| Wrapped | `/wrapped` | Single-page bento grid |
+| Share | On `/wrapped` | Download bento as PNG |
 
 **Auto-skip `/map`** when provider fingerprint or heuristics confidence ≥ configured threshold (default 0.85) and at least one trip row parses successfully.
 

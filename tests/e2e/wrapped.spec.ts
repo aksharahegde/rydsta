@@ -3,37 +3,50 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from '@playwright/test'
 
-const fixturePath = path.join(
+const fixturesDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
-  '../fixtures/uber-rider-trips-sample.csv',
+  '../fixtures',
 )
 
-test('upload uber csv navigates to wrapped with trip stats', async ({ page }) => {
-  await page.goto('/upload')
+const singleYearFixture = path.join(fixturesDir, 'uber-rider-trips-sample.csv')
+const multiYearFixture = path.join(fixturesDir, 'uber-rider-trips-multi-year.csv')
 
-  // Uber fingerprint matches trips_data-*.csv filenames (see shared/constants/providers.ts)
+async function uploadCsv(page: import('@playwright/test').Page, fixturePath: string) {
+  await page.goto('/upload')
   await page.getByTestId('ride-upload-input').setInputFiles({
     name: 'trips_data-0.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(fixturePath),
   })
-
   await expect(page.getByTestId('ride-upload-error')).not.toBeVisible({ timeout: 30_000 })
   await expect(page).toHaveURL(/\/wrapped$/, { timeout: 30_000 })
-  await expect(page.getByTestId('wrapped-slide-player')).toBeVisible({ timeout: 30_000 })
+  await expect(page.getByTestId('wrapped-bento-grid')).toBeVisible({ timeout: 30_000 })
+}
 
-  const wrappedContent = page.getByText(/wrapped/i).or(page.getByText('2', { exact: true }))
-  await expect(wrappedContent.first()).toBeVisible({ timeout: 15_000 })
+test('upload uber csv navigates to wrapped bento with download', async ({ page }) => {
+  await uploadCsv(page, singleYearFixture)
 
-  const nextSlide = page.getByRole('button', { name: 'Next slide' })
-  while (await nextSlide.isEnabled()) {
-    await nextSlide.click()
-  }
+  await expect(page.getByText(/wrapped/i).first()).toBeVisible({ timeout: 15_000 })
+  await expect(page.getByText(/rides in 2025/)).toBeVisible()
+  await expect(page.getByTestId('wrapped-year-rail')).toBeVisible()
+  await expect(page.getByTestId('wrapped-activity-heatmap')).toBeVisible()
 
-  const download = page.getByTestId('wrapped-share-download')
-  if (await download.isVisible()) {
-    await download.click()
-    await expect(download).toBeDisabled()
-    await expect(download).toBeEnabled({ timeout: 30_000 })
-  }
+  const download = page.getByTestId('wrapped-download-png')
+  await expect(download).toBeVisible()
+  await download.click()
+  await expect(download).toBeDisabled()
+  await expect(download).toBeEnabled({ timeout: 30_000 })
+})
+
+test('multi-year export switches year stats and heatmap', async ({ page }) => {
+  await uploadCsv(page, multiYearFixture)
+
+  await expect(page.getByTestId('wrapped-year-rail')).toBeVisible()
+  await expect(page.getByTestId('wrapped-year-2024')).toBeVisible()
+  await expect(page.getByTestId('wrapped-year-2019')).toBeVisible()
+  await expect(page.getByText(/rides in 2024/)).toBeVisible()
+  await expect(page.getByTestId('wrapped-activity-heatmap')).toBeVisible()
+
+  await page.getByTestId('wrapped-year-2019').click()
+  await expect(page.getByText(/rides in 2019/)).toBeVisible()
 })

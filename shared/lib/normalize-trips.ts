@@ -1,6 +1,7 @@
 import {
   MILES_TO_KM,
   UBER_STARTED_AT_FALLBACK,
+  UBER_TRIP_START_HEADERS,
   type CanonicalField,
   type RideProvider,
 } from '../constants/providers'
@@ -39,6 +40,20 @@ function isMilesColumn(headers: string[], columnIndex: number): boolean {
   return header.includes('mile')
 }
 
+function firstNonEmptyCell(
+  row: string[],
+  headers: string[],
+  headerNames: readonly string[],
+): string {
+  for (const name of headerNames) {
+    const idx = headerIndex(headers, name)
+    if (idx < 0) continue
+    const value = (row[idx] ?? '').trim()
+    if (value) return value
+  }
+  return ''
+}
+
 function resolveStartedAt(
   row: string[],
   table: ParsedTable,
@@ -47,9 +62,9 @@ function resolveStartedAt(
 ): Date | null {
   let raw = cellAt(row, mappings, 'startedAt')
   if (!raw && provider === 'uber') {
-    const fallbackIdx = headerIndex(table.headers, UBER_STARTED_AT_FALLBACK)
-    if (fallbackIdx >= 0) {
-      raw = (row[fallbackIdx] ?? '').trim()
+    raw = firstNonEmptyCell(row, table.headers, UBER_TRIP_START_HEADERS)
+    if (!raw) {
+      raw = firstNonEmptyCell(row, table.headers, [UBER_STARTED_AT_FALLBACK])
     }
   }
   return parseDate(raw)

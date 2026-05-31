@@ -24,6 +24,8 @@ async function onFilesSelected(files: File[]) {
 
 <template>
   <main class="upload-page">
+    <RidePageNav current="Upload" />
+
     <header class="upload-page__header">
       <h1>Upload your rides</h1>
       <p class="upload-page__lede">
@@ -57,7 +59,7 @@ async function onFilesSelected(files: File[]) {
 .upload-page {
   max-width: 32rem;
   margin: 0 auto;
-  padding: 2rem 1.25rem 3rem;
+  padding: 0 1.25rem 3rem;
 }
 
 .upload-page__header {

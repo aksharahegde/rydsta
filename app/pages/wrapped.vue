@@ -1,29 +1,12 @@
 <script setup lang="ts">
-import { computeWrappedStats } from '#shared/lib/wrapped-stats'
-import { pickPersonality } from '#shared/lib/personality'
+import { validTrips } from '#shared/lib/wrapped-stats'
 import type { Trip } from '#shared/types/trip'
 
 definePageMeta({ layout: 'wrapped' })
 
 const trips = useState<Trip[]>('ride-trips', () => [])
-const { buildStorySlides } = useWrappedStory()
 
-const slides = computed(() => buildStorySlides(trips.value))
-
-const validTrips = computed(() =>
-  trips.value.filter(
-    t => Boolean(t.startedAt) && !Number.isNaN(t.startedAt.getTime()),
-  ),
-)
-
-const share = computed(() => {
-  if (validTrips.value.length === 0) return undefined
-  const stats = computeWrappedStats(trips.value)
-  return {
-    stats,
-    personality: pickPersonality(stats, validTrips.value),
-  }
-})
+const hasTrips = computed(() => validTrips(trips.value).length > 0)
 
 watch(
   trips,
@@ -35,17 +18,8 @@ watch(
 </script>
 
 <template>
-  <main class="wrapped-page">
-    <WrappedSlidePlayer
-      v-if="slides.length"
-      :slides="slides"
-      :share="share"
-    />
-  </main>
+  <WrappedBentoGrid
+    v-if="hasTrips"
+    :trips="trips"
+  />
 </template>
-
-<style scoped>
-.wrapped-page {
-  min-height: 100dvh;
-}
-</style>

@@ -64,4 +64,10 @@ export const PROVIDER_FINGERPRINTS: ProviderFingerprint[] = [
 
 export const UBER_STARTED_AT_FALLBACK = 'request_timestamp_local'
 
+/** Prefer trip start columns before request time (request can be export-time). */
+export const UBER_TRIP_START_HEADERS = [
+  'begintrip_timestamp_local',
+  'begintrip_timestamp_utc',
+] as const
+
 export const MILES_TO_KM = 1.60934

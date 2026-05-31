@@ -41,6 +41,10 @@ function isValidTrip(t: Trip): boolean {
   return Boolean(t.startedAt) && !Number.isNaN(t.startedAt.getTime())
 }
 
+export function validTrips(trips: Trip[]): Trip[] {
+  return trips.filter(isValidTrip)
+}
+
 function normalizePickup(pickup: string | null): string | null {
   if (pickup == null) return null
   const trimmed = pickup.trim()
@@ -63,31 +67,43 @@ function modeKey(counts: Map<string, number>): string | null {
   return best
 }
 
-function yearFromRange(valid: Trip[]): number {
-  if (valid.length === 0) return new Date().getFullYear()
-
-  const yearCounts = new Map<number, number>()
-  for (const t of valid) {
-    const y = t.startedAt.getFullYear()
-    yearCounts.set(y, (yearCounts.get(y) ?? 0) + 1)
+/** Distinct years with trips, newest first (GitHub order). */
+export function yearsFromTrips(trips: Trip[]): number[] {
+  const years = new Set<number>()
+  for (const t of validTrips(trips)) {
+    years.add(t.startedAt.getFullYear())
   }
-
-  let bestYear = valid[0]!.startedAt.getFullYear()
-  let bestCount = 0
-  for (const [year, count] of yearCounts) {
-    if (count > bestCount || (count === bestCount && year > bestYear)) {
-      bestCount = count
-      bestYear = year
-    }
-  }
-  return bestYear
+  return [...years].sort((a, b) => b - a)
 }
 
-export function computeWrappedStats(trips: Trip[]): WrappedStats {
-  const valid = trips.filter(isValidTrip)
-  const year = yearFromRange(valid)
+export function yearRangeLabel(years: number[]): string {
+  if (years.length === 0) return ''
+  const sorted = [...years].sort((a, b) => a - b)
+  const min = sorted[0]!
+  const max = sorted[sorted.length - 1]!
+  return min === max ? String(min) : `${min}–${max}`
+}
 
-  const fares = valid
+export function tripsForYear(trips: Trip[], year: number): Trip[] {
+  return validTrips(trips).filter(t => t.startedAt.getFullYear() === year)
+}
+
+export function tripCountByYear(trips: Trip[]): { year: number, count: number }[] {
+  const counts = new Map<number, number>()
+  for (const t of validTrips(trips)) {
+    const y = t.startedAt.getFullYear()
+    counts.set(y, (counts.get(y) ?? 0) + 1)
+  }
+  return yearsFromTrips(trips).map(year => ({
+    year,
+    count: counts.get(year) ?? 0,
+  }))
+}
+
+export function computeWrappedStats(trips: Trip[], year: number): WrappedStats {
+  const inYear = tripsForYear(trips, year)
+
+  const fares = inYear
     .map(t => t.fare)
     .filter((f): f is number => f != null && !Number.isNaN(f))
   const totalSpend = fares.length ? fares.reduce((a, b) => a + b, 0) : null
@@ -96,7 +112,7 @@ export function computeWrappedStats(trips: Trip[]): WrappedStats {
   const weekdayCounts = new Map<string, number>()
   const pickupCounts = new Map<string, number>()
 
-  for (const t of valid) {
+  for (const t of inYear) {
     const month = MONTH_NAMES[t.startedAt.getMonth()]
     monthCounts.set(month, (monthCounts.get(month) ?? 0) + 1)
 
@@ -111,7 +127,7 @@ export function computeWrappedStats(trips: Trip[]): WrappedStats {
 
   let longestTrip: Trip | null = null
   let bestDistance = -1
-  for (const t of valid) {
+  for (const t of inYear) {
     const d = tripDistance(t)
     if (d > bestDistance) {
       bestDistance = d
@@ -122,7 +138,7 @@ export function computeWrappedStats(trips: Trip[]): WrappedStats {
 
   let priciestTrip: Trip | null = null
   let bestFare = -1
-  for (const t of valid) {
+  for (const t of inYear) {
     if (t.fare == null || Number.isNaN(t.fare)) continue
     if (t.fare > bestFare) {
       bestFare = t.fare
@@ -133,9 +149,9 @@ export function computeWrappedStats(trips: Trip[]): WrappedStats {
 
   return {
     year,
-    totalTrips: valid.length,
+    totalTrips: inYear.length,
     totalSpend,
-    currency: valid.find(t => t.currency)?.currency ?? null,
+    currency: inYear.find(t => t.currency)?.currency ?? null,
     busiestMonth: modeKey(monthCounts),
     busiestWeekday: modeKey(weekdayCounts),
     topPickup: modeKey(pickupCounts),

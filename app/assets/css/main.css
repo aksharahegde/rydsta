@@ -7,6 +7,8 @@
 
 @import "shadcn-vue/tailwind.css";
 
+@import "./bento.css";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -82,6 +84,21 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    /* Ride Wrapped design tokens */
+    --color-paper:     oklch(97% 0.008 65);
+    --color-paper-2:   oklch(93% 0.012 65);
+    --color-ink:       oklch(18% 0.010 60);
+    --color-ink-2:     oklch(42% 0.008 65);
+    --color-rule:      oklch(84% 0.008 65);
+    --color-accent:    oklch(68% 0.12  55);
+    --color-accent-bg: oklch(93% 0.022 60);
+    --color-focus:     oklch(52% 0.19  55);
+    --color-night:     oklch(16% 0.018 260);
+    --color-night-ink: oklch(88% 0.010 260);
+    --font-display: "Bricolage Grotesque", "Geist Variable", system-ui, sans-serif;
+    --font-body:    "Geist Variable", "Geist", system-ui, sans-serif;
+    --color-sky:       oklch(97% 0.010 240);
 }
 
 .dark {

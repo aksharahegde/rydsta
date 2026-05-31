@@ -70,12 +70,34 @@ describe('normalizeTrips', () => {
     expect(trips[0]?.distanceKm).toBeCloseTo(4.2 * 1.60934, 4)
   })
 
-  it('uses request_timestamp_local when begintrip is empty', () => {
+  it('uses begintrip_timestamp_utc when local begintrip is empty', () => {
     const table = parseFixtureTable()
     const mappings = mappingsFromUberFingerprint(table.headers)
     const row = [...table.rows[0]!]
-    const beginIdx = table.headers.indexOf('begintrip_timestamp_local')
-    row[beginIdx] = ''
+    const beginLocalIdx = table.headers.indexOf('begintrip_timestamp_local')
+    const beginUtcIdx = table.headers.indexOf('begintrip_timestamp_utc')
+    row[beginLocalIdx] = ''
+    row[beginUtcIdx] = '2019-06-10 14:30:00'
+
+    const trips = normalizeTrips(
+      { ...table, rows: [row] },
+      'uber',
+      mappings,
+      'Rider/trips_data-0.csv',
+    )
+
+    expect(trips).toHaveLength(1)
+    expect(trips[0]?.startedAt.getFullYear()).toBe(2019)
+  })
+
+  it('uses request_timestamp_local when all begintrip columns are empty', () => {
+    const table = parseFixtureTable()
+    const mappings = mappingsFromUberFingerprint(table.headers)
+    const row = [...table.rows[0]!]
+    const beginLocalIdx = table.headers.indexOf('begintrip_timestamp_local')
+    const beginUtcIdx = table.headers.indexOf('begintrip_timestamp_utc')
+    row[beginLocalIdx] = ''
+    row[beginUtcIdx] = ''
 
     const trips = normalizeTrips(
       { ...table, rows: [row] },
