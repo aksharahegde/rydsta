@@ -18,9 +18,9 @@ const description =
   'Turn your Uber, Ola, and Rapido trip exports into a shareable year-in-rides story. 100% in your browser.'
 
 useSeoMeta({
-  title: 'Ride Wrapped — Your rides, wrapped',
+  title: 'Rydsta — Your rides, by the numbers',
   description,
-  ogTitle: 'Ride Wrapped — Your rides, wrapped',
+  ogTitle: 'Rydsta — Your rides, by the numbers',
   ogDescription: description,
   twitterCard: 'summary_large_image',
 })
@@ -36,8 +36,8 @@ useSeoMeta({
       <div class="rw-content rw-nav__inner">
         <span
           class="rw-wordmark"
-          aria-label="Ride Wrapped"
-        >Ride Wrapped</span>
+          aria-label="Rydsta"
+        >Rydsta</span>
         <div class="rw-nav__actions">
           <RideThemeToggle />
           <NuxtLink
@@ -206,7 +206,7 @@ useSeoMeta({
           Your city moved you.<br>Now see how.
         </p>
         <div class="rw-footer-meta">
-          <span class="rw-wordmark-sm">Ride Wrapped</span>
+          <span class="rw-wordmark-sm">Rydsta</span>
           <span
             class="rw-footer-sep"
             aria-hidden="true"

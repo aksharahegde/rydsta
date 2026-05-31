@@ -5,8 +5,8 @@ const year = new Date().getFullYear()
 useHead({ titleTemplate: '%s' })
 
 useSeoMeta({
-  title: 'About | Ride Wrapped',
-  description: 'Ride Wrapped turns your Uber, Ola, and Rapido exports into a shareable year-in-rides story. Built by Akshara Hegde. Runs entirely in your browser.',
+  title: 'About | Rydsta',
+  description: 'Rydsta turns your Uber, Ola, and Rapido trip exports into a visual story. Built by Akshara Hegde. Runs entirely in your browser.',
 })
 </script>
 
@@ -21,8 +21,8 @@ useSeoMeta({
         <NuxtLink
           to="/"
           class="rw-wordmark"
-          aria-label="Ride Wrapped home"
-        >Ride Wrapped</NuxtLink>
+          aria-label="Rydsta home"
+        >Rydsta</NuxtLink>
         <div class="rw-nav__actions">
           <RideThemeToggle />
           <NuxtLink
@@ -43,9 +43,9 @@ useSeoMeta({
 
         <!-- Identity header -->
         <p class="rw-about__tag">About</p>
-        <h1 class="rw-about__heading">Ride Wrapped</h1>
+        <h1 class="rw-about__heading">Rydsta</h1>
         <p class="rw-about__sub">
-          Your ride history has a story in it. Ride Wrapped finds it,
+          Your ride history has a story in it. Rydsta finds it,
           built for Uber, Ola, and Rapido riders across India.
         </p>
         <p class="rw-about__sub">
@@ -93,7 +93,7 @@ useSeoMeta({
         <section class="rw-about__section">
           <p class="rw-about__section-label">Privacy by design</p>
           <p class="rw-about__body">
-            Your trip data never leaves your device. Ride Wrapped runs
+            Your trip data never leaves your device. Rydsta runs
             entirely in your browser. The file you drop is parsed
             by a Web Worker and discarded the moment you close the tab.
           </p>
@@ -167,7 +167,7 @@ useSeoMeta({
           Your city moved you.<br>Now see how.
         </p>
         <div class="rw-footer-meta">
-          <span class="rw-wordmark-sm">Ride Wrapped</span>
+          <span class="rw-wordmark-sm">Rydsta</span>
           <span
             class="rw-footer-sep"
             aria-hidden="true"

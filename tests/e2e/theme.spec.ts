@@ -23,7 +23,7 @@ test.describe('theme toggle', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.evaluate(() => {
-      localStorage.setItem('ride-wrapped-color-mode', 'light')
+      localStorage.setItem('rydsta-color-mode', 'light')
       document.documentElement.classList.remove('dark')
     })
     await page.reload()
@@ -61,7 +61,7 @@ test.describe('theme toggle', () => {
 
   test('download CTA text is readable in light mode', async ({ page }) => {
     await page.evaluate(() => {
-      localStorage.setItem('ride-wrapped-color-mode', 'light')
+      localStorage.setItem('rydsta-color-mode', 'light')
       document.documentElement.classList.remove('dark')
     })
     await goToWrapped(page)
@@ -92,13 +92,13 @@ test.describe('theme toggle', () => {
     await toggle.click()
     await expect(page.locator('html')).toHaveClass(/dark/)
     await expect.poll(() =>
-      page.evaluate(() => localStorage.getItem('ride-wrapped-color-mode')),
+      page.evaluate(() => localStorage.getItem('rydsta-color-mode')),
     ).toBe('dark')
 
     await toggle.click()
     await expect(page.locator('html')).not.toHaveClass(/dark/)
     await expect.poll(() =>
-      page.evaluate(() => localStorage.getItem('ride-wrapped-color-mode')),
+      page.evaluate(() => localStorage.getItem('rydsta-color-mode')),
     ).toBe('light')
 
     const bg = await page.evaluate(() =>

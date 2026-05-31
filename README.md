@@ -1,6 +1,6 @@
-# Ride Wrapped
+# Rydsta
 
-Turn your Uber, Ola, or Rapido trip history into a shareable Wrapped card. Stats, animated route map, rider personality, and heatmap — all in your browser, nothing uploaded.
+Your ride stats, finally worth looking at. Turn your Uber, Ola, or Rapido trip history into a shareable visual story — stats, animated route map, rider personality, and heatmap — all in your browser, nothing uploaded.
 
 ---
 

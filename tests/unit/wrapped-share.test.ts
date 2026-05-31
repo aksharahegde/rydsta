@@ -33,7 +33,7 @@ describe('downloadSharePng', () => {
       canvasWidth: 1080,
       canvasHeight: 1920,
     })
-    expect(anchor.download).toMatch(/^ride-wrapped-\d{4}\.png$/)
+    expect(anchor.download).toMatch(/^rydsta-\d{4}\.png$/)
     expect(click).toHaveBeenCalledOnce()
 
     createElement.mockRestore()
@@ -50,14 +50,14 @@ describe('downloadSharePng', () => {
     await downloadSharePng(element, {
       width: 1080,
       height: 1080,
-      filename: 'ride-wrapped-2025.png',
+      filename: 'rydsta-2025.png',
     })
 
     expect(toPngMock).toHaveBeenCalledWith(
       element,
       expect.objectContaining({ width: 1080, height: 1080 }),
     )
-    expect(anchor.download).toBe('ride-wrapped-2025.png')
+    expect(anchor.download).toBe('rydsta-2025.png')
 
     createElement.mockRestore()
   })

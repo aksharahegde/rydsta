@@ -11,7 +11,7 @@ export default defineNuxtConfig({
       script: [
         {
           key: 'ride-theme-init',
-          innerHTML: `(function(){try{var k='ride-wrapped-color-mode',s=localStorage.getItem(k),d=s==='dark';if(d)document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark')}catch(e){}})();`,
+          innerHTML: `(function(){try{var k='rydsta-color-mode',s=localStorage.getItem(k),d=s==='dark';if(d)document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark')}catch(e){}})();`,
           tagPosition: 'head',
         },
       ],
@@ -23,10 +23,10 @@ export default defineNuxtConfig({
     componentDir: '@/components/ui',
   },
   site: {
-    url: 'https://ride-wrapped.example',
-    name: 'Ride Wrapped',
+    url: 'https://rydsta.vercel.app',
+    name: 'Rydsta',
     description:
-      'Turn your Uber, Ola, and Rapido trip exports into a shareable year-in-rides story. 100% in your browser.',
+      'Turn your Uber, Ola, and Rapido trip exports into a visual ride story. 100% in your browser.',
     defaultLocale: 'en',
   },
   alias: {

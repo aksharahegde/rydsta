@@ -143,7 +143,7 @@ async function onDownload() {
     await downloadSharePng(el, {
       width: EXPORT_WIDTH,
       height: EXPORT_HEIGHT,
-      filename: `ride-wrapped-${selectedYear.value}.png`,
+      filename: `rydsta-${selectedYear.value}.png`,
     })
   } finally {
     capturing.value = false

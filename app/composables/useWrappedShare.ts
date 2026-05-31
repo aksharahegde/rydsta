@@ -13,7 +13,7 @@ export async function downloadSharePng(
   const width = options?.width ?? 1080
   const height = options?.height ?? 1920
   const filename =
-    options?.filename ?? `ride-wrapped-${new Date().getFullYear()}.png`
+    options?.filename ?? `rydsta-${new Date().getFullYear()}.png`
 
   const dataUrl = await toPng(element, {
     pixelRatio: 2,

@@ -15,7 +15,7 @@ defineProps<{
         class="rw-page-nav__home"
         data-testid="ride-nav-home"
       >
-        Ride Wrapped
+        Rydsta
       </NuxtLink>
       <template v-if="current">
         <span

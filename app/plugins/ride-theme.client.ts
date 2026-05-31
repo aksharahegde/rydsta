@@ -1,7 +1,7 @@
 import { useColorMode } from '@vueuse/core'
 import type { RideThemeMode, RideThemeContext } from '~/composables/useRideTheme'
 
-const STORAGE_KEY = 'ride-wrapped-color-mode'
+const STORAGE_KEY = 'rydsta-color-mode'
 
 function applyThemeClass(isDark: boolean) {
   document.documentElement.classList.toggle('dark', isDark)
