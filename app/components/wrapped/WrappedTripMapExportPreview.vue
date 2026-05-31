@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import WrappedTripMapSvgLayers from '~/components/wrapped/WrappedTripMapSvgLayers.vue'
 import { buildTripMapExportSvg } from '#shared/lib/trip-map-export-svg'
 import {
   primaryCityFromTrips,
@@ -12,7 +13,7 @@ const props = defineProps<{
 }>()
 
 const coordCount = computed(() => tripsWithCoordinates(props.trips).length)
-const svg = computed(() => buildTripMapExportSvg(props.trips))
+const hasSvg = computed(() => buildTripMapExportSvg(props.trips) !== null)
 
 const primaryCity = computed(() => primaryCityFromTrips(props.trips))
 
@@ -27,40 +28,12 @@ const mapTitle = computed(() => {
 
 <template>
   <article
-    v-if="svg"
+    v-if="hasSvg"
     class="rw-tile rw-tile--trip-map rw-tile--trip-map--export"
     data-testid="wrapped-trip-map-export-preview"
   >
     <div class="rw-tile--trip-map-body rw-tile--trip-map-body--export">
-      <svg
-        class="rw-trip-map-export"
-        :viewBox="svg.viewBox"
-        preserveAspectRatio="xMidYMid meet"
-        aria-hidden="true"
-      >
-        <path
-          v-for="(d, index) in svg.arcPaths"
-          :key="index"
-          :d="d"
-          class="rw-trip-map-export__arc"
-        />
-        <circle
-          v-for="(point, index) in svg.pickups"
-          :key="`p-${index}`"
-          class="rw-trip-map-export__pickup"
-          :cx="point.x"
-          :cy="point.y"
-          r="3.5"
-        />
-        <circle
-          v-for="(point, index) in svg.dropoffs"
-          :key="`d-${index}`"
-          class="rw-trip-map-export__dropoff"
-          :cx="point.x"
-          :cy="point.y"
-          r="2.5"
-        />
-      </svg>
+      <WrappedTripMapSvgLayers :trips="trips" />
       <div class="rw-tile--trip-map-overlay">
         <p class="rw-tile-eyebrow rw-tile--trip-map-eyebrow">
           {{ mapTitle }}

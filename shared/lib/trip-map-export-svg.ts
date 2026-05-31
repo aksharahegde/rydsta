@@ -1,8 +1,10 @@
 import {
   arcLineCoordinates,
   boundsForOverview,
+  boundsForTrips,
   tripHasCoordinates,
   tripsForMapOverview,
+  tripsWithCoordinates,
   type LngLat,
   type MapBounds,
 } from './trip-map-playback'
@@ -65,15 +67,27 @@ function sampleTrips(trips: Trip[]): Trip[] {
   return trips.filter((_, index) => index % step === 0)
 }
 
+export type BuildTripMapExportSvgOptions = {
+  /** Plot all trips with coordinates instead of the primary-city overview subset. */
+  allCoordinates?: boolean
+}
+
 /** SVG route preview for PNG export (no WebGL / MapLibre). */
-export function buildTripMapExportSvg(trips: Trip[]): TripMapExportSvg | null {
-  const overview = tripsForMapOverview(trips)
-  const bounds = boundsForOverview(trips)
-  if (!bounds || overview.length === 0) return null
+export function buildTripMapExportSvg(
+  trips: Trip[],
+  options?: BuildTripMapExportSvgOptions,
+): TripMapExportSvg | null {
+  const displayTrips = options?.allCoordinates
+    ? tripsWithCoordinates(trips)
+    : tripsForMapOverview(trips)
+  const bounds = options?.allCoordinates
+    ? boundsForTrips(displayTrips)
+    : boundsForOverview(trips)
+  if (!bounds || displayTrips.length === 0) return null
 
   const fitBounds = expandBounds(bounds)
 
-  const sampled = sampleTrips(overview)
+  const sampled = sampleTrips(displayTrips)
   const arcPaths: string[] = []
   const pickupCoords: [number, number][] = []
   const dropoffCoords: [number, number][] = []

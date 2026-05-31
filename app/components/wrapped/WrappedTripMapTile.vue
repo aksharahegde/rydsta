@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import WrappedTripMap from '~/components/wrapped/WrappedTripMap.vue'
+import WrappedTripMapSvgLayers from '~/components/wrapped/WrappedTripMapSvgLayers.vue'
+import { buildTripMapExportSvg } from '#shared/lib/trip-map-export-svg'
 import {
   primaryCityFromTrips,
   tripsWithCoordinates,
@@ -17,6 +19,12 @@ const emit = defineEmits<{
 
 const coordCount = computed(() => tripsWithCoordinates(props.trips).length)
 const hasCoords = computed(() => coordCount.value > 0)
+const hasSvg = computed(() =>
+  buildTripMapExportSvg(props.trips, { allCoordinates: true }) !== null,
+)
+
+const mapHostReady = ref(false)
+const mapLive = ref(false)
 
 const primaryCity = computed(() => primaryCityFromTrips(props.trips))
 
@@ -27,6 +35,18 @@ const mapTitle = computed(() => {
   }
   return `Your routes · ${props.year}`
 })
+
+onMounted(async () => {
+  await nextTick()
+  await new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  })
+  mapHostReady.value = true
+})
+
+function onMapReady() {
+  mapLive.value = true
+}
 
 function onExpand() {
   if (!hasCoords.value) return
@@ -56,16 +76,22 @@ function onExpandKeydown(event: KeyboardEvent) {
         @click="onExpand"
         @keydown="onExpandKeydown"
       >
-        <ClientOnly>
-          <WrappedTripMap
-            :trips="trips"
-            mode="overview"
-            :interactive="false"
-          />
-          <template #fallback>
-            <div class="rw-tile--trip-map-fallback" />
-          </template>
-        </ClientOnly>
+        <WrappedTripMapSvgLayers
+          v-if="hasSvg"
+          :trips="trips"
+          all-coordinates
+          class="rw-trip-map-svg-underlay"
+        />
+        <WrappedTripMap
+          v-if="mapHostReady"
+          class="rw-trip-map--tile"
+          :class="{ 'rw-trip-map--tile-live': mapLive }"
+          :trips="trips"
+          mode="overview"
+          overview-all-coordinates
+          :interactive="false"
+          @ready="onMapReady"
+        />
         <div class="rw-tile--trip-map-overlay">
           <p class="rw-tile-eyebrow rw-tile--trip-map-eyebrow">
             {{ mapTitle }}

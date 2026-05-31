@@ -11,6 +11,7 @@ import {
 import {
   allTripPointsGeoJson,
   boundsForOverview,
+  boundsForTrips,
   boundsForTrip,
   mapCenterForOverview,
   sliceArcCoordinates,
@@ -33,6 +34,8 @@ const props = withDefaults(
     mode?: 'overview' | 'playback'
     /** Idle preview: all pickup/dropoff points before first play at trip 0. */
     showAllPoints?: boolean
+    /** Overview tile: plot every trip with coordinates, not only the primary-city subset. */
+    overviewAllCoordinates?: boolean
     interactive?: boolean
     playbackSpeed?: number
   }>(),
@@ -40,6 +43,7 @@ const props = withDefaults(
     activeIndex: 0,
     mode: 'overview',
     showAllPoints: false,
+    overviewAllCoordinates: false,
     interactive: true,
     playbackSpeed: 1,
   },
@@ -56,7 +60,7 @@ const { isDark } = useRideTheme()
 
 const containerRef = ref<HTMLElement | null>(null)
 let map: maplibregl.Map | null = null
-let resizeObserver: ResizeObserver | null = null
+let containerObserver: ResizeObserver | null = null
 let arcFrame = 0
 let arcStart = 0
 let layersReady = false
@@ -194,14 +198,11 @@ function scheduleSync() {
   })
 }
 
-function ensureMap() {
+function tryCreateMap() {
   if (!containerRef.value || map) return
 
   const { clientWidth, clientHeight } = containerRef.value
-  if (clientWidth < 2 || clientHeight < 2) {
-    requestAnimationFrame(ensureMap)
-    return
-  }
+  if (clientWidth < 2 || clientHeight < 2) return
 
   const center = mapCenterForOverview(props.trips) ?? [77.59, 12.97]
 
@@ -220,6 +221,7 @@ function ensureMap() {
   map.on('load', () => {
     map?.resize()
     onStyleReady()
+    requestAnimationFrame(() => map?.resize())
   })
   map.on('error', (event) => {
     console.error('[WrappedTripMap]', event.error ?? event)
@@ -274,7 +276,7 @@ function animateArc(fullCoords: ReturnType<typeof sliceArcCoordinates>) {
   arcFrame = requestAnimationFrame(tick)
 }
 
-function fitCamera(padding = 40) {
+function fitCamera(padding = 40, overviewBounds: ReturnType<typeof boundsForOverview> = null) {
   if (!map) return
 
   const showAllCoordPoints = props.mode === 'playback' && props.showAllPoints
@@ -283,7 +285,7 @@ function fitCamera(padding = 40) {
     ? boundsForTrip(coordTrips.value[props.activeIndex]!)
     : showAllCoordPoints
       ? boundsForTrips(coordTrips.value)
-      : boundsForOverview(props.trips)
+      : overviewBounds ?? boundsForOverview(props.trips)
 
   if (bounds) {
     map.fitBounds(bounds, {
@@ -323,7 +325,12 @@ function syncOverview() {
 
   updateRouteColor()
 
-  const pointTrips = props.mode === 'playback' ? coordTrips.value : overviewTrips.value
+  const pointTrips =
+    props.mode === 'playback'
+      ? coordTrips.value
+      : props.overviewAllCoordinates
+        ? coordTrips.value
+        : overviewTrips.value
   setGeoJson('trip-points', allTripPointsGeoJson(pointTrips))
   setGeoJson('trip-arc', { type: 'FeatureCollection', features: [] })
   setGeoJson('trip-active-pickup', { type: 'FeatureCollection', features: [] })
@@ -344,7 +351,13 @@ function syncOverview() {
     )
   }
 
-  fitCamera(props.mode === 'overview' && !props.interactive ? 16 : 28)
+  const overviewBounds = props.overviewAllCoordinates
+    ? boundsForTrips(coordTrips.value)
+    : boundsForOverview(props.trips)
+  fitCamera(
+    props.mode === 'overview' && !props.interactive ? 16 : 28,
+    overviewBounds,
+  )
 }
 
 function syncPlayback() {
@@ -445,7 +458,14 @@ function reloadStyle() {
 }
 
 watch(
-  () => [tripsSyncKey.value, props.activeIndex, props.mode, props.showAllPoints] as const,
+  () =>
+    [
+      tripsSyncKey.value,
+      props.activeIndex,
+      props.mode,
+      props.showAllPoints,
+      props.overviewAllCoordinates,
+    ] as const,
   ([key, index], [prevKey, prevIndex]) => {
     if (key !== prevKey) hasEmittedReady = false
     if (index !== prevIndex) lastPlaybackArcIndex = -1
@@ -461,19 +481,29 @@ watch(routeColor, () => {
   updateRouteColor()
 })
 
-watch(containerRef, (el) => {
-  if (el) ensureMap()
+function bindContainer(el: HTMLElement | null) {
+  containerObserver?.disconnect()
+  containerObserver = null
+  if (!el) return
+
+  containerObserver = new ResizeObserver(() => {
+    if (map) {
+      map.resize()
+      scheduleSync()
+      return
+    }
+    tryCreateMap()
+  })
+  containerObserver.observe(el)
+  tryCreateMap()
+}
+
+watch(containerRef, (el, prev) => {
+  if (el && el !== prev) bindContainer(el)
 })
 
 onMounted(() => {
-  ensureMap()
-  if (containerRef.value) {
-    resizeObserver = new ResizeObserver(() => {
-      map?.resize()
-      scheduleSync()
-    })
-    resizeObserver.observe(containerRef.value)
-  }
+  if (containerRef.value) bindContainer(containerRef.value)
 })
 
 function zoomIn() { map?.zoomIn({ duration: 300 }) }
@@ -494,7 +524,8 @@ defineExpose({ zoomIn, zoomOut, fitView, replayArc })
 onUnmounted(() => {
   cancelArcAnimation()
   if (syncRaf) cancelAnimationFrame(syncRaf)
-  resizeObserver?.disconnect()
+  containerObserver?.disconnect()
+  containerObserver = null
   map?.remove()
   map = null
   layersReady = false

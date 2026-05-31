@@ -58,6 +58,8 @@ test('trip map tile expands and playback controls advance', async ({ page }) => 
 
   const mapTile = page.getByTestId('wrapped-trip-map-tile')
   await expect(mapTile).toBeVisible({ timeout: 15_000 })
+  await expect(mapTile.locator('.rw-trip-map-svg-underlay')).toBeVisible({ timeout: 15_000 })
+  await expect(mapTile.locator('.rw-trip-map-export__arc').first()).toBeVisible()
   await expect(mapTile.getByText(/Bengaluru · 2025/i)).toBeVisible()
   await expect(mapTile.getByText(/2 trips mapped/i)).toBeVisible()
 

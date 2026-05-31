@@ -55,21 +55,33 @@ const rangeLabel = computed(() => yearRangeLabel(years.value))
 
 const selectedYear = ref(years.value[0] ?? new Date().getFullYear())
 
-watch(years, (list) => {
-  if (list.length === 0) return
-  if (!list.includes(selectedYear.value)) {
-    selectedYear.value = list[0]!
-  }
-}, { immediate: true })
-
 const yearTrips = computed(() => tripsForYear(props.trips, selectedYear.value))
 const stats = computed(() => computeWrappedStats(props.trips, selectedYear.value))
 const personality = computed(() => pickPersonality(stats.value, yearTrips.value))
 const heatmap = computed(() => buildYearHeatmap(props.trips, selectedYear.value))
 const mapExpanded = ref(false)
 
+/** Avoid remounting the map when the years list corrects the initial selected year. */
+let skipMapRemountForYearSync = true
+
+watch(years, (list) => {
+  if (list.length === 0) return
+  if (!list.includes(selectedYear.value)) {
+    skipMapRemountForYearSync = true
+    selectedYear.value = list[0]!
+    void nextTick(() => {
+      skipMapRemountForYearSync = false
+    })
+  }
+}, { immediate: true })
+
+onMounted(() => {
+  skipMapRemountForYearSync = false
+})
+
 watch(selectedYear, () => {
   mapExpanded.value = false
+  if (skipMapRemountForYearSync) return
   mapMountKey.value += 1
 })
 
@@ -160,7 +172,6 @@ async function onDownload() {
   } finally {
     capturing.value = false
     downloading.value = false
-    mapMountKey.value += 1
   }
 }
 </script>

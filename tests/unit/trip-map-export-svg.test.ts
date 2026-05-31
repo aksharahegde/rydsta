@@ -31,6 +31,24 @@ describe('buildTripMapExportSvg', () => {
     expect(buildTripMapExportSvg(trips)).toBeNull()
   })
 
+  it('plots all coordinate trips when allCoordinates is set', () => {
+    const trips = [
+      trip({ startedAt: new Date('2025-03-01'), city: 'Bangalore' }),
+      trip({
+        startedAt: new Date('2025-03-02'),
+        city: 'Mumbai',
+        pickupLat: 19.08,
+        pickupLng: 72.88,
+        dropoffLat: 19.09,
+        dropoffLng: 72.89,
+      }),
+    ]
+    const overviewOnly = buildTripMapExportSvg(trips)
+    const allCoords = buildTripMapExportSvg(trips, { allCoordinates: true })
+    expect(overviewOnly!.arcPaths.length).toBe(1)
+    expect(allCoords!.arcPaths.length).toBe(2)
+  })
+
   it('builds arcs and points for mapped trips', () => {
     const trips = [
       trip({ startedAt: new Date('2025-03-01') }),
