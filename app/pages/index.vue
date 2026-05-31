@@ -8,6 +8,7 @@ import LandingPreviewRoutes from '~/components/landing/LandingPreviewRoutes.vue'
 import LandingPreviewShare from '~/components/landing/LandingPreviewShare.vue'
 import LandingPreviewStats from '~/components/landing/LandingPreviewStats.vue'
 import LandingPreviewTripMap from '~/components/landing/LandingPreviewTripMap.vue'
+import LandingPreviewTripStats from '~/components/landing/LandingPreviewTripStats.vue'
 import LandingPreviewUpload from '~/components/landing/LandingPreviewUpload.vue'
 import LandingProviderStrip from '~/components/landing/LandingProviderStrip.vue'
 
@@ -106,6 +107,14 @@ useSeoMeta({
         description="Night Owl, Airport Regular, Road Warrior — we match your ride patterns."
       >
         <LandingPreviewPersonality />
+      </LandingFeatureCard>
+
+      <LandingFeatureCard
+        variant="rw-landing-card--trip-stats"
+        title="From your export"
+        description="Distance, city, ride type, and fare — mined from trips_data columns."
+      >
+        <LandingPreviewTripStats />
       </LandingFeatureCard>
 
       <LandingFeatureCard

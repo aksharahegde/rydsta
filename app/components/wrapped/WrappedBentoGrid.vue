@@ -3,6 +3,7 @@ import {
   getBentoHighlight,
   getBusiestInHero,
   getBusiestTile,
+  getMapStatTiles,
   getPersonalityTileClass,
   getSpendLabel,
   shouldShowHeroTile,
@@ -91,6 +92,7 @@ const spendLabel = computed(() => getSpendLabel(stats.value))
 const busiestInHero = computed(() => getBusiestInHero(stats.value))
 const busiestTile = computed(() => getBusiestTile(stats.value))
 const highlight = computed(() => getBentoHighlight(stats.value))
+const mapStatTiles = computed(() => getMapStatTiles(stats.value))
 
 const warriorContent = computed(() => {
   if (spendLabel.value && !stats.value.busiestMonth) {
@@ -233,6 +235,28 @@ async function onDownload() {
           <p class="rw-tile-busiest-value">
             {{ busiestTile.value }}
           </p>
+        </article>
+
+        <!-- Route stats beside trip map -->
+        <article
+          v-if="mapStatTiles.length > 0"
+          class="rw-tile rw-tile--map-stats"
+        >
+          <div
+            v-for="item in mapStatTiles"
+            :key="item.eyebrow"
+            class="rw-map-stats__item"
+          >
+            <p class="rw-tile-eyebrow">
+              {{ item.eyebrow }}
+            </p>
+            <p
+              class="rw-map-stats__value"
+              :class="{ 'rw-map-stats__value--clamp': item.eyebrow === 'Go-to ride' || item.eyebrow === 'Primary city' }"
+            >
+              {{ item.value }}
+            </p>
+          </div>
         </article>
 
         <!-- Trip map -->

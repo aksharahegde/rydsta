@@ -8,6 +8,10 @@ export type WrappedStats = {
   busiestMonth: string | null
   busiestWeekday: string | null
   topPickup: string | null
+  totalDistanceKm: number | null
+  primaryCity: string | null
+  topVehicleType: string | null
+  averageFare: number | null
   longestTrip: Trip | null
   priciestTrip: Trip | null
 }
@@ -111,6 +115,10 @@ export function computeWrappedStats(trips: Trip[], year: number): WrappedStats {
   const monthCounts = new Map<string, number>()
   const weekdayCounts = new Map<string, number>()
   const pickupCounts = new Map<string, number>()
+  const cityCounts = new Map<string, number>()
+  const vehicleCounts = new Map<string, number>()
+  let totalDistanceKm = 0
+  let hasDistance = false
 
   for (const t of inYear) {
     const month = MONTH_NAMES[t.startedAt.getMonth()]
@@ -122,6 +130,21 @@ export function computeWrappedStats(trips: Trip[], year: number): WrappedStats {
     const pickup = normalizePickup(t.pickup)
     if (pickup) {
       pickupCounts.set(pickup, (pickupCounts.get(pickup) ?? 0) + 1)
+    }
+
+    const city = normalizePickup(t.city)
+    if (city) {
+      cityCounts.set(city, (cityCounts.get(city) ?? 0) + 1)
+    }
+
+    const vehicle = normalizePickup(t.vehicleType)
+    if (vehicle) {
+      vehicleCounts.set(vehicle, (vehicleCounts.get(vehicle) ?? 0) + 1)
+    }
+
+    if (t.distanceKm != null && !Number.isNaN(t.distanceKm) && t.distanceKm > 0) {
+      totalDistanceKm += t.distanceKm
+      hasDistance = true
     }
   }
 
@@ -147,6 +170,11 @@ export function computeWrappedStats(trips: Trip[], year: number): WrappedStats {
   }
   if (bestFare < 0) priciestTrip = null
 
+  const averageFare
+    = totalSpend != null && inYear.length > 0
+      ? totalSpend / inYear.length
+      : null
+
   return {
     year,
     totalTrips: inYear.length,
@@ -155,6 +183,10 @@ export function computeWrappedStats(trips: Trip[], year: number): WrappedStats {
     busiestMonth: modeKey(monthCounts),
     busiestWeekday: modeKey(weekdayCounts),
     topPickup: modeKey(pickupCounts),
+    totalDistanceKm: hasDistance ? totalDistanceKm : null,
+    primaryCity: modeKey(cityCounts),
+    topVehicleType: modeKey(vehicleCounts),
+    averageFare,
     longestTrip,
     priciestTrip,
   }

@@ -3,6 +3,7 @@ import { computeWrappedStats } from '../../shared/lib/wrapped-stats'
 import {
   formatWrappedDistance,
   getBentoHighlight,
+  getMapStatTiles,
   getSpendLabel,
   shouldShowHeroTile,
   shouldShowTopPickupTile,
@@ -107,5 +108,36 @@ describe('wrapped bento content', () => {
 
     const stats = computeWrappedStats(trips, 2025)
     expect(shouldShowTopPickupTile(stats)).toBe(false)
+  })
+
+  it('builds map stat tiles from trips_data fields', () => {
+    const trips = [
+      trip({
+        startedAt: new Date('2025-06-01T10:00:00Z'),
+        city: 'Bengaluru',
+        vehicleType: 'Uber Go',
+        distanceKm: 12.5,
+        fare: 300,
+      }),
+      trip({
+        startedAt: new Date('2025-06-02T10:00:00Z'),
+        city: 'Bengaluru',
+        vehicleType: 'Uber Go',
+        distanceKm: 8,
+        fare: 500,
+      }),
+    ]
+
+    const stats = computeWrappedStats(trips, 2025)
+    const tiles = getMapStatTiles(stats)
+    expect(tiles.map(t => t.eyebrow)).toEqual([
+      'Distance traveled',
+      'Primary city',
+      'Go-to ride',
+      'Avg fare',
+    ])
+    expect(tiles[0]?.value).toBe('20.5 km')
+    expect(tiles[1]?.value).toBe('Bengaluru')
+    expect(tiles[2]?.value).toBe('Uber Go')
   })
 })

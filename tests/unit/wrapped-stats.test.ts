@@ -80,6 +80,8 @@ describe('computeWrappedStats', () => {
     expect(s.topPickup).toBe('Koramangala')
     expect(s.longestTrip?.distanceKm).toBe(35)
     expect(s.priciestTrip?.fare).toBe(450)
+    expect(s.totalDistanceKm).toBe(40)
+    expect(s.averageFare).toBe(285)
   })
 
   it('returns empty stats for no trips in year', () => {
@@ -88,6 +90,35 @@ describe('computeWrappedStats', () => {
     expect(s.totalSpend).toBeNull()
     expect(s.busiestMonth).toBeNull()
     expect(s.longestTrip).toBeNull()
+    expect(s.totalDistanceKm).toBeNull()
+    expect(s.primaryCity).toBeNull()
+    expect(s.topVehicleType).toBeNull()
+    expect(s.averageFare).toBeNull()
+  })
+
+  it('derives distance, city, vehicle type from export fields', () => {
+    const exportTrips = [
+      {
+        ...trips[0]!,
+        city: 'Bengaluru',
+        vehicleType: 'Uber Go',
+        distanceKm: 4.2,
+        fare: 285.5,
+      },
+      {
+        ...trips[1]!,
+        city: 'Bengaluru',
+        vehicleType: 'Uber Go',
+        distanceKm: 22,
+        fare: 890,
+      },
+    ]
+
+    const s = computeWrappedStats(exportTrips, 2025)
+    expect(s.totalDistanceKm).toBeCloseTo(26.2)
+    expect(s.primaryCity).toBe('Bengaluru')
+    expect(s.topVehicleType).toBe('Uber Go')
+    expect(s.averageFare).toBeCloseTo(587.75)
   })
 
   it('only counts trips from the requested year', () => {

@@ -11,6 +11,11 @@ export type BentoBusiestTile = {
   value: string
 }
 
+export type BentoMapStat = {
+  eyebrow: string
+  value: string
+}
+
 export function formatWrappedDistance(km: number): string {
   const fractionDigits = km >= 100 ? 0 : km >= 10 ? 1 : 2
   const formatted = km.toLocaleString(undefined, {
@@ -58,6 +63,49 @@ export function getBusiestInHero(stats: WrappedStats): BentoBusiestTile | null {
 
 export function getBusiestTile(stats: WrappedStats): BentoBusiestTile | null {
   return getBusiestInHero(stats)
+}
+
+export function getAverageFareLabel(stats: WrappedStats): string | null {
+  const { averageFare, currency } = stats
+  if (averageFare == null || Number.isNaN(averageFare) || averageFare < 0) {
+    return null
+  }
+  return formatWrappedMoney(Math.round(averageFare), currency)
+}
+
+export function getMapStatTiles(stats: WrappedStats): BentoMapStat[] {
+  const tiles: BentoMapStat[] = []
+
+  if (stats.totalDistanceKm != null && stats.totalDistanceKm > 0) {
+    tiles.push({
+      eyebrow: 'Distance traveled',
+      value: formatWrappedDistance(stats.totalDistanceKm),
+    })
+  }
+
+  if (stats.primaryCity) {
+    tiles.push({
+      eyebrow: 'Primary city',
+      value: stats.primaryCity,
+    })
+  }
+
+  if (stats.topVehicleType) {
+    tiles.push({
+      eyebrow: 'Go-to ride',
+      value: stats.topVehicleType,
+    })
+  }
+
+  const avgFare = getAverageFareLabel(stats)
+  if (avgFare) {
+    tiles.push({
+      eyebrow: 'Avg fare',
+      value: avgFare,
+    })
+  }
+
+  return tiles
 }
 
 export function getBentoHighlight(stats: WrappedStats): BentoHighlight | null {
