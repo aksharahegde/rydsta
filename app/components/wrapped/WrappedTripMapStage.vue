@@ -6,6 +6,7 @@ import {
 } from '#shared/lib/map-playback-speed'
 import { mapPlaybackMessageAt } from '#shared/lib/map-playback-messages'
 import { tripsWithCoordinates } from '#shared/lib/trip-map-playback'
+import { formatDisplayLabel } from '#shared/lib/wrapped-stats'
 import type { Trip } from '#shared/types/trip'
 
 const props = defineProps<{
@@ -100,13 +101,21 @@ const durationLabel = computed(() => {
   return m > 0 ? `${h}h ${m}m` : `${h}h`
 })
 
-const routeLabel = computed(() => {
+const pickupLabel = computed(() => {
   const trip = currentTrip.value
-  if (!trip?.pickup && !trip?.dropoff) return ''
-  const from = trip.pickup?.trim() || 'Pickup'
-  const to = trip.dropoff?.trim() || 'Dropoff'
-  return `${from} → ${to}`
+  if (!trip?.pickup?.trim() && !trip?.dropoff) return ''
+  return formatDisplayLabel(trip.pickup) ?? 'Pickup'
 })
+
+const dropoffLabel = computed(() => {
+  const trip = currentTrip.value
+  if (!trip?.pickup?.trim() && !trip?.dropoff) return ''
+  return formatDisplayLabel(trip.dropoff) ?? 'Dropoff'
+})
+
+const hasRoute = computed(
+  () => !!(pickupLabel.value || dropoffLabel.value),
+)
 
 const dateLabel = computed(() => {
   const trip = currentTrip.value
@@ -325,15 +334,30 @@ onUnmounted(() => {
 
       <!-- Trip detail strip -->
       <div
-        v-if="routeLabel || hasStats"
+        v-if="hasRoute || hasStats"
         class="rw-trip-map-stage__detail"
       >
-        <p
-          v-if="routeLabel"
-          class="rw-trip-detail__route rw-tile-clamp rw-tile-clamp--2"
+        <div
+          v-if="hasRoute"
+          class="rw-trip-detail__route"
         >
-          {{ routeLabel }}
-        </p>
+          <div
+            class="rw-trip-detail__rail"
+            aria-hidden="true"
+          >
+            <span class="rw-trip-detail__dot rw-trip-detail__dot--pickup" />
+            <span class="rw-trip-detail__rail-line" />
+            <span class="rw-trip-detail__dot rw-trip-detail__dot--dropoff" />
+          </div>
+          <div class="rw-trip-detail__stops">
+            <p class="rw-trip-detail__stop rw-tile-clamp rw-tile-clamp--2">
+              {{ pickupLabel }}
+            </p>
+            <p class="rw-trip-detail__stop rw-tile-clamp rw-tile-clamp--2">
+              {{ dropoffLabel }}
+            </p>
+          </div>
+        </div>
         <div
           v-if="hasStats"
           class="rw-trip-detail__stats"

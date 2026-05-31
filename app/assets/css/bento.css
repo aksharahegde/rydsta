@@ -52,7 +52,8 @@
   --rw-viz-area: 0.45;
   --rw-viz-band-h: clamp(3rem, 24%, 4.25rem);
   --rw-viz-band-h-sm: clamp(2.5rem, 28%, 3.25rem);
-  --rw-tile-grid: oklch(50% 0.02 264 / 0.11);
+  --rw-tile-shade-warm: oklch(54% 0.1 55 / 0.09);
+  --rw-tile-shade-cool: oklch(50% 0.02 264 / 0.06);
   --rw-viz-wire: oklch(44% 0.04 264 / 0.34);
   --rw-viz-glow: oklch(54% 0.16 55);
 
@@ -62,8 +63,6 @@
   --rw-personality-muted: oklch(72% 0.02 264 / 0.72);
   --rw-personality-wire: oklch(88% 0.02 264 / 0.28);
   --rw-personality-glow: oklch(78% 0.16 70);
-  --rw-personality-grid: oklch(52% 0.02 264 / 0.22);
-
   /* Per-tile chart accent overrides */
   --rw-viz-amber: oklch(58% 0.19 48);
   --rw-viz-amber-fill: oklch(58% 0.19 48 / 0.18);
@@ -89,7 +88,8 @@
   --rw-viz-accent: oklch(78% 0.15 70 / 0.38);
   --rw-viz-on-dark: oklch(96% 0.01 95 / 0.42);
   --rw-viz-area: 0.48;
-  --rw-tile-grid: oklch(78% 0.02 264 / 0.1);
+  --rw-tile-shade-warm: oklch(78% 0.1 70 / 0.1);
+  --rw-tile-shade-cool: oklch(75% 0.02 264 / 0.07);
   --rw-viz-wire: oklch(88% 0.02 264 / 0.32);
   --rw-viz-glow: oklch(78% 0.16 70);
 
@@ -97,8 +97,6 @@
   --rw-personality-border: oklch(38% 0.02 264 / 0.7);
   --rw-personality-wire: oklch(90% 0.02 264 / 0.34);
   --rw-personality-glow: oklch(82% 0.17 72);
-  --rw-personality-grid: oklch(48% 0.02 264 / 0.26);
-
   --rw-viz-amber: oklch(75% 0.17 70);
   --rw-viz-amber-fill: oklch(75% 0.17 70 / 0.2);
   --rw-viz-amber-mid: oklch(75% 0.17 70 / 0.55);
@@ -142,10 +140,10 @@
   --rw-viz-amber-hi: rgba(200, 138, 46, 0.85);
   --rw-viz-glow: #c88a2e;
   --rw-viz-wire: rgba(68, 68, 100, 0.34);
-  --rw-tile-grid: rgba(80, 80, 100, 0.11);
+  --rw-tile-shade-warm: rgba(200, 138, 46, 0.08);
+  --rw-tile-shade-cool: rgba(80, 80, 100, 0.05);
   --rw-personality-glow: #d4824a;
   --rw-personality-wire: rgba(220, 220, 240, 0.28);
-  --rw-personality-grid: rgba(130, 130, 160, 0.22);
 }
 
 /* Tile base */
@@ -178,17 +176,22 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image:
-    linear-gradient(var(--rw-tile-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--rw-tile-grid) 1px, transparent 1px);
-  background-size: 1.125rem 1.125rem;
-  background-position: left bottom;
-  -webkit-mask-image: linear-gradient(to top, #000 28%, transparent 82%);
-  mask-image: linear-gradient(to top, #000 28%, transparent 82%);
+  background:
+    radial-gradient(
+      ellipse 115% 75% at 100% 100%,
+      var(--rw-tile-shade-warm),
+      transparent 68%
+    ),
+    linear-gradient(
+      to top,
+      var(--rw-tile-shade-cool),
+      transparent 58%
+    );
 }
 
 .rw-tile--blueprint-dark::before {
-  --rw-tile-grid: oklch(92% 0.02 95 / 0.08);
+  --rw-tile-shade-warm: oklch(92% 0.04 70 / 0.12);
+  --rw-tile-shade-cool: oklch(92% 0.02 95 / 0.08);
 }
 
 .rw-map-stats__item::before {
@@ -197,14 +200,17 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image:
-    linear-gradient(var(--rw-tile-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--rw-tile-grid) 1px, transparent 1px);
-  background-size: 0.75rem 0.75rem;
-  background-position: left bottom;
-  opacity: 0.75;
-  -webkit-mask-image: linear-gradient(to top, #000 35%, transparent 90%);
-  mask-image: linear-gradient(to top, #000 35%, transparent 90%);
+  background:
+    radial-gradient(
+      ellipse 100% 70% at 0% 100%,
+      var(--rw-tile-shade-warm),
+      transparent 62%
+    ),
+    linear-gradient(
+      to top,
+      var(--rw-tile-shade-cool),
+      transparent 52%
+    );
 }
 
 /* Grid placement (4-col desktop, 3 rows) */
@@ -225,11 +231,6 @@
   justify-content: flex-start;
   background-color: var(--rw-personality-bg);
   border-color: var(--rw-personality-border);
-  background-image:
-    linear-gradient(var(--rw-personality-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--rw-personality-grid) 1px, transparent 1px);
-  background-size: 1.125rem 1.125rem;
-  background-position: left bottom;
 }
 
 .rw-tile--personality::before {
@@ -502,12 +503,14 @@
   --rw-viz-glow: var(--rw-viz-amber);
 }
 
-/* ── Privacy/pickup tile: amber grid tint ────────────────────── */
+/* ── Privacy/pickup tile: warmer shade tint ──────────────────── */
 .rw-tile--privacy {
-  --rw-tile-grid: oklch(58% 0.19 48 / 0.07);
+  --rw-tile-shade-warm: oklch(58% 0.14 48 / 0.1);
+  --rw-tile-shade-cool: oklch(58% 0.08 48 / 0.05);
 }
 .dark .rw-tile--privacy {
-  --rw-tile-grid: oklch(75% 0.17 70 / 0.09);
+  --rw-tile-shade-warm: oklch(75% 0.14 70 / 0.12);
+  --rw-tile-shade-cool: oklch(75% 0.08 70 / 0.07);
 }
 
 /* ── Trip highlight tile: accent fill for route ──────────────── */
@@ -752,10 +755,9 @@
   margin-bottom: var(--space-2xs);
 }
 
-.rw-tile-highlight-route {
-  font-size: var(--text-sm);
-  color: var(--color-ink-2);
-  line-height: 1.4;
+.rw-tile-highlight-stops {
+  margin-top: var(--space-2xs);
+  margin-bottom: 0;
 }
 
 /* ── Tile: Providers / busiest ───────────────────────────────── */
@@ -1441,18 +1443,76 @@
   color: oklch(82% 0.08 80);
 }
 
+/* ── Route stops (map popup + highlight tile) ───────────────── */
+.rw-trip-detail__route {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-3xs);
+}
+
+.rw-trip-detail__rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 18px;
+}
+
+/* Match active map markers (WrappedTripMap trip-active-pickup / dropoff) */
+.rw-trip-detail__dot {
+  flex-shrink: 0;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.rw-trip-detail__dot--pickup {
+  width: 18px;
+  height: 18px;
+  background: #c88a2e;
+  border: 2.5px solid #f8f6f2;
+  box-shadow: 0 0 0 1px rgb(28 34 51 / 12%);
+}
+
+.rw-trip-detail__dot--dropoff {
+  width: 16px;
+  height: 16px;
+  background: #1c2233;
+  border: 2.5px solid #c88a2e;
+  box-shadow: 0 0 0 1px rgb(28 34 51 / 12%);
+}
+
+.rw-trip-detail__rail-line {
+  flex: 1;
+  width: 0;
+  min-height: 12px;
+  margin: 4px 0;
+  border-left: 2px dotted #c88a2e;
+  opacity: 0.65;
+}
+
+.rw-trip-detail__stops {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  min-width: 0;
+  flex: 1;
+  padding: 1px 0;
+}
+
+.rw-trip-detail__stop {
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  margin: 0;
+  line-height: 1.4;
+}
+
 /* ── Trip detail strip ───────────────────────────────────────── */
 .rw-trip-map-stage__detail {
   padding: var(--space-xs) var(--space-md);
   border-top: 1px solid var(--color-rule);
   min-height: 0;
-}
-
-.rw-trip-detail__route {
-  font-size: var(--text-sm);
-  color: var(--color-ink-2);
-  margin: 0 0 var(--space-3xs);
-  line-height: 1.4;
 }
 
 .rw-trip-detail__stats {

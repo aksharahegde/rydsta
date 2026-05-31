@@ -49,10 +49,15 @@ export function validTrips(trips: Trip[]): Trip[] {
   return trips.filter(isValidTrip)
 }
 
-function normalizePickup(pickup: string | null): string | null {
-  if (pickup == null) return null
-  const trimmed = pickup.trim()
+/** Trim and replace underscores so export codes (e.g. Short_trip) read naturally in UI. */
+export function formatDisplayLabel(value: string | null | undefined): string | null {
+  if (value == null) return null
+  const trimmed = value.trim().replace(/_/g, ' ').replace(/\s+/g, ' ')
   return trimmed.length > 0 ? trimmed : null
+}
+
+function normalizePickup(pickup: string | null): string | null {
+  return formatDisplayLabel(pickup)
 }
 
 function tripDistance(t: Trip): number {

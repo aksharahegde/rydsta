@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   computeWrappedStats,
+  formatDisplayLabel,
   tripsForYear,
   tripCountByYear,
   yearRangeLabel,
@@ -119,6 +120,22 @@ describe('computeWrappedStats', () => {
     expect(s.primaryCity).toBe('Bengaluru')
     expect(s.topVehicleType).toBe('Uber Go')
     expect(s.averageFare).toBeCloseTo(587.75)
+  })
+
+  it('normalizes underscores in vehicle type labels for display', () => {
+    const exportTrips = [
+      {
+        ...trips[0]!,
+        vehicleType: 'Short_trip',
+      },
+      {
+        ...trips[1]!,
+        vehicleType: 'Short_trip',
+      },
+    ]
+    const s = computeWrappedStats(exportTrips, 2025)
+    expect(s.topVehicleType).toBe('Short trip')
+    expect(formatDisplayLabel('Short_trip')).toBe('Short trip')
   })
 
   it('only counts trips from the requested year', () => {

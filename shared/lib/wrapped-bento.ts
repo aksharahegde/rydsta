@@ -1,9 +1,12 @@
+import type { Trip } from '../types/trip'
+import { formatDisplayLabel } from './wrapped-stats'
 import type { WrappedStats } from './wrapped-stats'
 
 export type BentoHighlight = {
   title: string
   value: string
-  route?: string
+  pickup: string
+  dropoff: string
 }
 
 export type BentoBusiestTile = {
@@ -93,7 +96,7 @@ export function getMapStatTiles(stats: WrappedStats): BentoMapStat[] {
   if (stats.topVehicleType) {
     tiles.push({
       eyebrow: 'Go-to ride',
-      value: stats.topVehicleType,
+      value: formatDisplayLabel(stats.topVehicleType) ?? stats.topVehicleType,
     })
   }
 
@@ -108,6 +111,16 @@ export function getMapStatTiles(stats: WrappedStats): BentoMapStat[] {
   return tiles
 }
 
+function highlightStops(trip: Trip): Pick<BentoHighlight, 'pickup' | 'dropoff'> | null {
+  const pickup = formatDisplayLabel(trip.pickup)
+  const dropoff = formatDisplayLabel(trip.dropoff)
+  if (!pickup && !dropoff) return null
+  return {
+    pickup: pickup ?? 'Pickup',
+    dropoff: dropoff ?? 'Dropoff',
+  }
+}
+
 export function getBentoHighlight(stats: WrappedStats): BentoHighlight | null {
   const longest = stats.longestTrip
   if (
@@ -115,24 +128,43 @@ export function getBentoHighlight(stats: WrappedStats): BentoHighlight | null {
     && !Number.isNaN(longest.distanceKm)
     && longest.distanceKm > 0
   ) {
-    const route = [longest.pickup, longest.dropoff].filter(Boolean).join(' → ')
+    const stops = highlightStops(longest)
+    if (!stops) {
+      return {
+        title: 'Longest trip',
+        value: formatWrappedDistance(longest.distanceKm),
+        pickup: 'Pickup',
+        dropoff: 'Dropoff',
+      }
+    }
     return {
       title: 'Longest trip',
       value: formatWrappedDistance(longest.distanceKm),
-      route: route || undefined,
+      ...stops,
     }
   }
 
   const priciest = stats.priciestTrip
   if (priciest?.fare != null && !Number.isNaN(priciest.fare)) {
-    const route = [priciest.pickup, priciest.dropoff].filter(Boolean).join(' → ')
+    const stops = highlightStops(priciest)
+    if (!stops) {
+      return {
+        title: 'Priciest trip',
+        value: formatWrappedMoney(
+          priciest.fare,
+          priciest.currency ?? stats.currency,
+        ),
+        pickup: 'Pickup',
+        dropoff: 'Dropoff',
+      }
+    }
     return {
       title: 'Priciest trip',
       value: formatWrappedMoney(
         priciest.fare,
         priciest.currency ?? stats.currency,
       ),
-      route: route || undefined,
+      ...stops,
     }
   }
 

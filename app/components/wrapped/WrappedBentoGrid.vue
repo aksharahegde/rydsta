@@ -391,12 +391,24 @@ async function onDownload() {
           <p class="rw-tile-highlight-value">
             {{ highlight.value }}
           </p>
-          <p
-            v-if="highlight.route"
-            class="rw-tile-highlight-route rw-tile-clamp rw-tile-clamp--2"
-          >
-            {{ highlight.route }}
-          </p>
+          <div class="rw-trip-detail__route rw-tile-highlight-stops">
+            <div
+              class="rw-trip-detail__rail"
+              aria-hidden="true"
+            >
+              <span class="rw-trip-detail__dot rw-trip-detail__dot--pickup" />
+              <span class="rw-trip-detail__rail-line" />
+              <span class="rw-trip-detail__dot rw-trip-detail__dot--dropoff" />
+            </div>
+            <div class="rw-trip-detail__stops">
+              <p class="rw-trip-detail__stop rw-tile-clamp rw-tile-clamp--2">
+                {{ highlight.pickup }}
+              </p>
+              <p class="rw-trip-detail__stop rw-tile-clamp rw-tile-clamp--2">
+                {{ highlight.dropoff }}
+              </p>
+            </div>
+          </div>
         </article>
 
         <!-- Secondary stat / tagline -->
