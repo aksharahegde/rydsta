@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import {
+  formatPlaybackSpeedLabel,
+  isPlaybackSpeed,
+  PLAYBACK_SPEED_OPTIONS,
+} from '#shared/lib/map-playback-speed'
 import { tripsWithCoordinates } from '#shared/lib/trip-map-playback'
 import type { Trip } from '#shared/types/trip'
 
@@ -20,11 +25,20 @@ const {
   tripCount,
   hasTrips,
   isPlaying,
+  playbackSpeed,
+  setPlaybackSpeed,
   togglePlay,
   next,
   prev,
   reset,
 } = useTripMapPlayback(yearTripsRef)
+
+const speedOptions = PLAYBACK_SPEED_OPTIONS
+
+function onSpeedChange(event: Event) {
+  const value = Number((event.target as HTMLSelectElement).value)
+  if (isPlaybackSpeed(value)) setPlaybackSpeed(value)
+}
 
 const routeLabel = computed(() => {
   const trip = currentTrip.value
@@ -112,6 +126,7 @@ onUnmounted(() => {
             :trips="playbackTrips"
             mode="playback"
             :active-index="currentIndex"
+            :playback-speed="playbackSpeed"
             :interactive="true"
           />
         </ClientOnly>
@@ -125,6 +140,22 @@ onUnmounted(() => {
       </p>
 
       <footer class="rw-trip-map-stage__controls">
+        <select
+          class="rw-trip-map-stage__speed-select"
+          data-testid="wrapped-trip-map-speed"
+          :value="playbackSpeed"
+          :disabled="!hasTrips"
+          aria-label="Playback speed"
+          @change="onSpeedChange"
+        >
+          <option
+            v-for="speed in speedOptions"
+            :key="speed"
+            :value="speed"
+          >
+            {{ formatPlaybackSpeedLabel(speed) }}
+          </option>
+        </select>
         <button
           type="button"
           class="rw-trip-map-stage__btn"

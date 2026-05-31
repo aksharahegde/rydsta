@@ -18,9 +18,8 @@ import {
   tripsForMapOverview,
   tripsWithCoordinates,
 } from '#shared/lib/trip-map-playback'
+import { arcDrawMsForSpeed } from '#shared/lib/map-playback-speed'
 import type { Trip } from '#shared/types/trip'
-
-const ARC_DRAW_MS = 450
 
 const props = withDefaults(
   defineProps<{
@@ -28,13 +27,17 @@ const props = withDefaults(
     activeIndex?: number
     mode?: 'overview' | 'playback'
     interactive?: boolean
+    playbackSpeed?: number
   }>(),
   {
     activeIndex: 0,
     mode: 'overview',
     interactive: true,
+    playbackSpeed: 1,
   },
 )
+
+const arcDrawMs = computed(() => arcDrawMsForSpeed(props.playbackSpeed))
 
 const { isDark } = useRideTheme()
 
@@ -210,7 +213,7 @@ function animateArc(fullCoords: ReturnType<typeof sliceArcCoordinates>) {
   arcStart = performance.now()
 
   const tick = (now: number) => {
-    const progress = Math.min(1, (now - arcStart) / ARC_DRAW_MS)
+    const progress = Math.min(1, (now - arcStart) / arcDrawMs.value)
     const slice = sliceArcCoordinates(fullCoords, progress)
     const feature = {
       type: 'Feature' as const,
