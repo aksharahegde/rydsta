@@ -31,14 +31,15 @@ const props = withDefaults(
     trips: Trip[]
     activeIndex?: number
     mode?: 'overview' | 'playback'
-    isPlaying?: boolean
+    /** Idle preview: all pickup/dropoff points before first play at trip 0. */
+    showAllPoints?: boolean
     interactive?: boolean
     playbackSpeed?: number
   }>(),
   {
     activeIndex: 0,
     mode: 'overview',
-    isPlaying: false,
+    showAllPoints: false,
     interactive: true,
     playbackSpeed: 1,
   },
@@ -276,8 +277,8 @@ function animateArc(fullCoords: ReturnType<typeof sliceArcCoordinates>) {
 function fitCamera(padding = 40) {
   if (!map) return
 
-  const isActivePlaybackTrip = props.mode === 'playback' && props.isPlaying
-  const showAllCoordPoints = props.mode === 'playback' && !props.isPlaying
+  const showAllCoordPoints = props.mode === 'playback' && props.showAllPoints
+  const isActivePlaybackTrip = props.mode === 'playback' && !props.showAllPoints
   const bounds = isActivePlaybackTrip
     ? boundsForTrip(coordTrips.value[props.activeIndex]!)
     : showAllCoordPoints
@@ -421,7 +422,7 @@ function syncPlayback() {
 }
 
 function shouldShowAllPoints(): boolean {
-  return props.mode === 'overview' || !props.isPlaying
+  return props.mode === 'overview' || props.showAllPoints
 }
 
 function syncMap() {
@@ -444,7 +445,7 @@ function reloadStyle() {
 }
 
 watch(
-  () => [tripsSyncKey.value, props.activeIndex, props.mode, props.isPlaying] as const,
+  () => [tripsSyncKey.value, props.activeIndex, props.mode, props.showAllPoints] as const,
   ([key, index], [prevKey, prevIndex]) => {
     if (key !== prevKey) hasEmittedReady = false
     if (index !== prevIndex) lastPlaybackArcIndex = -1

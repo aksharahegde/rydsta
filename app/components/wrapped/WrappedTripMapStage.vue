@@ -45,6 +45,11 @@ const mapReady = ref(false)
 const initialPlaybackReady = ref(false)
 const initialLoadDone = ref(false)
 const messageIndex = ref(0)
+const hasEverPlayed = ref(false)
+
+const showAllPointsOnMap = computed(
+  () => !isPlaying.value && !hasEverPlayed.value && currentIndex.value === 0,
+)
 
 let messageTimer: ReturnType<typeof setInterval> | null = null
 
@@ -157,6 +162,7 @@ function resetOverlayState() {
   mapReady.value = false
   initialPlaybackReady.value = false
   initialLoadDone.value = false
+  hasEverPlayed.value = false
   messageIndex.value = 0
   clearMessageTimer()
 }
@@ -182,7 +188,10 @@ watch(showPlaybackOverlay, (visible) => {
 watch([mapReady, initialPlaybackReady, isPlaying], markInitialLoadDone)
 
 watch(isPlaying, (playing) => {
-  if (playing) initialPlaybackReady.value = false
+  if (playing) {
+    hasEverPlayed.value = true
+    initialPlaybackReady.value = false
+  }
 })
 
 watch(() => props.year, () => {
@@ -279,7 +288,7 @@ onUnmounted(() => {
             ref="mapRef"
             :trips="playbackTrips"
             mode="playback"
-            :is-playing="isPlaying"
+            :show-all-points="showAllPointsOnMap"
             :active-index="currentIndex"
             :playback-speed="playbackSpeed"
             :interactive="true"
