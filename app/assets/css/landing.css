@@ -114,6 +114,10 @@
   max-width: 16ch;
 }
 
+.rw-hero-head__dot {
+  color: var(--color-accent);
+}
+
 .rw-hero-sub {
   font-family: var(--font-body);
   font-size: var(--text-md);

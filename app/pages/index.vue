@@ -57,7 +57,7 @@ useSeoMeta({
       data-testid="landing-hero"
     >
       <p class="rw-hero-tag">Uber · Ola · Rapido</p>
-      <h1 class="rw-hero-head">Your year<br>in rides.</h1>
+      <h1 class="rw-hero-head">Your year<br>in rides<span class="rw-hero-head__dot">.</span></h1>
       <p class="rw-hero-sub">
         Drop an export. Get a shareable story.
         No account. Everything runs in your browser.
