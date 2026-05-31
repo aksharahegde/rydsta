@@ -31,6 +31,7 @@ const props = withDefaults(
     trips: Trip[]
     activeIndex?: number
     mode?: 'overview' | 'playback'
+    isPlaying?: boolean
     interactive?: boolean
     playbackSpeed?: number
     forceNight?: boolean
@@ -38,6 +39,7 @@ const props = withDefaults(
   {
     activeIndex: 0,
     mode: 'overview',
+    isPlaying: false,
     interactive: true,
     playbackSpeed: 1,
     forceNight: false,
@@ -400,9 +402,13 @@ function syncPlayback() {
   }
 }
 
+function shouldShowAllPoints(): boolean {
+  return props.mode === 'overview' || !props.isPlaying
+}
+
 function syncMap() {
   if (!map?.isStyleLoaded() || !layersReady) return
-  if (props.mode === 'overview') syncOverview()
+  if (shouldShowAllPoints()) syncOverview()
   else syncPlayback()
 
   if (!hasEmittedReady) {
@@ -418,7 +424,7 @@ function reloadStyle() {
 }
 
 watch(
-  () => [props.trips, props.activeIndex, props.mode] as const,
+  () => [props.trips, props.activeIndex, props.mode, props.isPlaying] as const,
   () => scheduleSync(),
   { deep: true },
 )

@@ -265,6 +265,7 @@ onUnmounted(() => {
             ref="mapRef"
             :trips="playbackTrips"
             mode="playback"
+            :is-playing="isPlaying"
             :active-index="currentIndex"
             :playback-speed="playbackSpeed"
             :interactive="true"
