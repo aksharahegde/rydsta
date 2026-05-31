@@ -28,6 +28,26 @@ const peakPoint = computed(() => points.value[peakIndex.value])
     preserveAspectRatio="none"
     aria-hidden="true"
   >
+    <defs>
+      <linearGradient
+        :id="`${patternId}-fill`"
+        x1="0"
+        y1="0"
+        x2="0"
+        y2="1"
+      >
+        <stop
+          offset="0%"
+          stop-color="currentColor"
+          stop-opacity="0.38"
+        />
+        <stop
+          offset="100%"
+          stop-color="currentColor"
+          stop-opacity="0.04"
+        />
+      </linearGradient>
+    </defs>
     <WrappedChartWireGrid
       :id="patternId"
       :width="100"
@@ -44,6 +64,7 @@ const peakPoint = computed(() => points.value[peakIndex.value])
       v-if="areaPath"
       class="rw-chart-sparkline__area"
       :d="areaPath"
+      :fill="`url(#${patternId}-fill)`"
     />
     <polyline
       v-if="linePoints"

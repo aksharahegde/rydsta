@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import WrappedChartArcRing from '~/components/wrapped/charts/WrappedChartArcRing.vue'
 import WrappedChartBars from '~/components/wrapped/charts/WrappedChartBars.vue'
 import WrappedChartDownload from '~/components/wrapped/charts/WrappedChartDownload.vue'
 import WrappedChartIcon from '~/components/wrapped/charts/WrappedChartIcon.vue'
 import WrappedChartPin from '~/components/wrapped/charts/WrappedChartPin.vue'
+import WrappedChartRadialBars from '~/components/wrapped/charts/WrappedChartRadialBars.vue'
 import WrappedChartRoute from '~/components/wrapped/charts/WrappedChartRoute.vue'
 import WrappedChartSparkline from '~/components/wrapped/charts/WrappedChartSparkline.vue'
 import WrappedPersonalityGlyph from '~/components/wrapped/charts/WrappedPersonalityGlyph.vue'
@@ -119,9 +121,11 @@ const warriorContent = computed(() => {
       tagline: spendLabel.value,
     }
   }
+  // Personality name already shown in the personality tile above —
+  // warrior tile leads with the tagline as the headline
   return {
-    title: personality.value,
-    tagline: personalityTagline.value,
+    title: personalityTagline.value,
+    tagline: 'Your ride personality',
   }
 })
 
@@ -183,16 +187,14 @@ async function onDownload() {
           class="rw-tile rw-tile--stat rw-tile--blueprint"
         >
           <div
-            class="rw-tile-viz rw-tile-viz--band"
+            class="rw-tile-viz rw-tile-viz--radial"
             aria-hidden="true"
           >
-            <WrappedChartBars
+            <WrappedChartRadialBars
               :key="selectedYear"
               grid-id="hero-monthly"
               :values="monthlyCounts"
               :animate="vizAnimate"
-              :bar-width="4"
-              :gap="2"
             />
           </div>
           <p class="rw-tile-eyebrow">
@@ -257,7 +259,7 @@ async function onDownload() {
           class="rw-tile rw-tile--privacy rw-tile--blueprint"
         >
           <div
-            class="rw-tile-viz rw-tile-viz--feature"
+            class="rw-tile-viz rw-tile-viz--ping"
             aria-hidden="true"
           >
             <WrappedChartPin
@@ -283,16 +285,14 @@ async function onDownload() {
           class="rw-tile rw-tile--providers rw-tile--blueprint"
         >
           <div
-            class="rw-tile-viz rw-tile-viz--band-sm"
+            class="rw-tile-viz rw-tile-viz--arc"
             aria-hidden="true"
           >
-            <WrappedChartBars
+            <WrappedChartArcRing
               :key="selectedYear"
               grid-id="busiest-weekday"
               :values="weekdayCounts"
               :animate="vizAnimate"
-              :bar-width="6"
-              :gap="3"
             />
           </div>
           <p class="rw-tile-eyebrow">

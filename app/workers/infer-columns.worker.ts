@@ -59,6 +59,11 @@ self.onmessage = (event: MessageEvent<InferColumnsMessage>) => {
     return
   }
 
+  if (!msg.table || !Array.isArray(msg.table.headers) || !Array.isArray(msg.table.rows)) {
+    postError('Invalid payload: table must have headers and rows arrays')
+    return
+  }
+
   try {
     const { provider, fingerprint, confidence: matchConfidence } = matchProvider({
       path: msg.path,

@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import WrappedChartWireGrid from '~/components/wrapped/charts/WrappedChartWireGrid.vue'
-
-const props = withDefaults(
+withDefaults(
   defineProps<{
     animate?: boolean
     gridId?: string
   }>(),
   { animate: true },
 )
-
-const uid = useId()
-const patternId = computed(() => props.gridId ?? `rw-download${uid}`)
 </script>
 
 <template>
@@ -21,29 +16,95 @@ const patternId = computed(() => props.gridId ?? `rw-download${uid}`)
     preserveAspectRatio="xMidYMid meet"
     aria-hidden="true"
   >
-    <WrappedChartWireGrid
-      :id="patternId"
-      :width="64"
-      :height="64"
+    <!-- 2×2 mini bento grid squares -->
+    <rect
+      class="rw-chart-share__sq"
+      x="10"
+      y="10"
+      width="18"
+      height="18"
+      rx="3"
+      :style="{ '--viz-i': 0 }"
     />
     <rect
-      class="rw-chart-download__frame"
-      x="14"
+      class="rw-chart-share__sq"
+      x="32"
       y="10"
-      width="36"
-      height="44"
-      rx="5"
+      width="18"
+      height="18"
+      rx="3"
+      :style="{ '--viz-i': 1 }"
     />
+    <rect
+      class="rw-chart-share__sq"
+      x="10"
+      y="32"
+      width="18"
+      height="18"
+      rx="3"
+      :style="{ '--viz-i': 2 }"
+    />
+    <!-- Top-right square: highlighted (the "share" source) -->
+    <rect
+      class="rw-chart-share__sq rw-chart-share__sq--hi"
+      x="32"
+      y="32"
+      width="18"
+      height="18"
+      rx="3"
+      :style="{ '--viz-i': 3 }"
+    />
+
+    <!-- Export arrow from top-right square -->
     <path
-      class="rw-chart-download__arrow"
+      class="rw-chart-share__arrow"
       pathLength="1"
-      d="M32 22 V40 M24 34 L32 44 L40 34"
+      d="M44 28 L52 20 M46 20 L52 20 L52 26"
     />
+
+    <!-- Glow node at arrow tip -->
     <circle
       class="rw-chart-wire__node rw-chart-wire__node--glow"
-      cx="32"
-      cy="44"
+      cx="52"
+      cy="20"
       r="2"
     />
   </svg>
 </template>
+
+<style scoped>
+.rw-chart-share__sq {
+  fill: currentColor;
+  fill-opacity: 0.14;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  animation: rw-viz-fade-in 380ms var(--ease-out) both;
+  animation-delay: calc(var(--viz-i, 0) * 70ms + 100ms);
+}
+
+.rw-chart-share__sq--hi {
+  fill-opacity: 0.32;
+}
+
+.rw-chart-share__arrow {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  animation: rw-viz-stroke-in 600ms var(--ease-out) 400ms both;
+}
+
+.rw-chart-download--static .rw-chart-share__sq,
+.rw-chart-download--static .rw-chart-share__arrow {
+  animation: none;
+  opacity: 1;
+  stroke-dashoffset: 0;
+}
+</style>

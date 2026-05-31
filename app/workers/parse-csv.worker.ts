@@ -29,6 +29,11 @@ self.onmessage = (event: MessageEvent<ParseCsvMessage>) => {
     return
   }
 
+  if (!(msg.data instanceof Uint8Array)) {
+    postError('Invalid payload: data must be Uint8Array')
+    return
+  }
+
   try {
     const text = decodeUtf8(msg.data)
     const table = parseCsvToTable(text, msg.path)

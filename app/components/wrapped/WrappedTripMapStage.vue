@@ -31,6 +31,7 @@ const {
   togglePlay,
   next,
   prev,
+  goTo,
   reset,
 } = useTripMapPlayback(yearTripsRef)
 
@@ -39,6 +40,7 @@ const speedOptions = PLAYBACK_SPEED_OPTIONS
 const MAP_WARMUP_MS = 700
 const MESSAGE_CYCLE_MS = 2200
 
+const mapRef = ref<{ zoomIn: () => void; zoomOut: () => void; fitView: () => void; replayArc: () => void } | null>(null)
 const mapReady = ref(false)
 const initialPlaybackReady = ref(false)
 const initialLoadDone = ref(false)
@@ -48,6 +50,88 @@ const messageIndex = ref(0)
 let warmupTimer: ReturnType<typeof setTimeout> | null = null
 let messageTimer: ReturnType<typeof setInterval> | null = null
 
+// ── Swipe gesture state ───────────────────────────────────────────
+let touchStartX = 0
+let touchStartY = 0
+
+function onTouchStart(e: TouchEvent) {
+  touchStartX = e.touches[0]!.clientX
+  touchStartY = e.touches[0]!.clientY
+}
+
+function onTouchEnd(e: TouchEvent) {
+  const dx = e.changedTouches[0]!.clientX - touchStartX
+  const dy = e.changedTouches[0]!.clientY - touchStartY
+  // Only trigger for mostly-horizontal swipes (avoids conflict with map pan)
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+    if (dx < 0) next()
+    else prev()
+  }
+}
+
+// ── Trip meta ─────────────────────────────────────────────────────
+const timeOfDay = computed(() => {
+  const h = currentTrip.value?.startedAt.getHours() ?? -1
+  if (h < 0) return null
+  if (h >= 22 || h < 5) return { label: 'Night ride', cls: 'rw-tod--night' }
+  if (h < 10) return { label: 'Morning', cls: 'rw-tod--morning' }
+  if (h < 17) return { label: 'Midday', cls: 'rw-tod--midday' }
+  return { label: 'Evening', cls: 'rw-tod--evening' }
+})
+
+const isNightTrip = computed(() => {
+  const h = currentTrip.value?.startedAt.getHours() ?? -1
+  return h >= 22 || (h >= 0 && h < 5)
+})
+
+const fareLabel = computed(() => {
+  const trip = currentTrip.value
+  if (!trip?.fare) return null
+  const sym = trip.currency === 'INR' ? '₹' : (trip.currency ?? '')
+  return `${sym}${Math.round(trip.fare)}`
+})
+
+const distanceLabel = computed(() => {
+  const trip = currentTrip.value
+  if (!trip?.distanceKm) return null
+  return `${trip.distanceKm.toFixed(1)} km`
+})
+
+const durationLabel = computed(() => {
+  const trip = currentTrip.value
+  if (!trip?.startedAt || !trip?.endedAt) return null
+  const mins = Math.round((trip.endedAt.getTime() - trip.startedAt.getTime()) / 60000)
+  if (mins <= 0) return null
+  if (mins < 60) return `${mins} min`
+  const h = Math.floor(mins / 60)
+  const m = mins % 60
+  return m > 0 ? `${h}h ${m}m` : `${h}h`
+})
+
+const routeLabel = computed(() => {
+  const trip = currentTrip.value
+  if (!trip?.pickup && !trip?.dropoff) return ''
+  const from = trip.pickup?.trim() || 'Pickup'
+  const to = trip.dropoff?.trim() || 'Dropoff'
+  return `${from} → ${to}`
+})
+
+const dateLabel = computed(() => {
+  const trip = currentTrip.value
+  if (!trip) return ''
+  return trip.startedAt.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+})
+
+const hasStats = computed(
+  () => !!(fareLabel.value || distanceLabel.value || durationLabel.value),
+)
+
+// ── Playback overlay ──────────────────────────────────────────────
 const showPlaybackOverlay = computed(
   () =>
     !initialLoadDone.value
@@ -62,33 +146,22 @@ const playbackMessage = computed(() =>
 )
 
 function clearWarmupTimer() {
-  if (warmupTimer !== null) {
-    clearTimeout(warmupTimer)
-    warmupTimer = null
-  }
+  if (warmupTimer !== null) { clearTimeout(warmupTimer); warmupTimer = null }
 }
 
 function clearMessageTimer() {
-  if (messageTimer !== null) {
-    clearInterval(messageTimer)
-    messageTimer = null
-  }
+  if (messageTimer !== null) { clearInterval(messageTimer); messageTimer = null }
 }
 
 function startMessageCycle() {
   clearMessageTimer()
-  messageTimer = setInterval(() => {
-    messageIndex.value += 1
-  }, MESSAGE_CYCLE_MS)
+  messageTimer = setInterval(() => { messageIndex.value += 1 }, MESSAGE_CYCLE_MS)
 }
 
 function beginPlayWarmup() {
   playWarmup.value = true
   clearWarmupTimer()
-  warmupTimer = setTimeout(() => {
-    playWarmup.value = false
-    warmupTimer = null
-  }, MAP_WARMUP_MS)
+  warmupTimer = setTimeout(() => { playWarmup.value = false; warmupTimer = null }, MAP_WARMUP_MS)
 }
 
 function resetOverlayState() {
@@ -101,9 +174,7 @@ function resetOverlayState() {
   clearMessageTimer()
 }
 
-function onMapReady() {
-  mapReady.value = true
-}
+function onMapReady() { mapReady.value = true }
 
 function onPlaybackSettled() {
   if (!initialPlaybackReady.value) initialPlaybackReady.value = true
@@ -136,25 +207,6 @@ function onSpeedChange(event: Event) {
   const value = Number((event.target as HTMLSelectElement).value)
   if (isPlaybackSpeed(value)) setPlaybackSpeed(value)
 }
-
-const routeLabel = computed(() => {
-  const trip = currentTrip.value
-  if (!trip?.pickup && !trip?.dropoff) return ''
-  const from = trip.pickup?.trim() || 'Pickup'
-  const to = trip.dropoff?.trim() || 'Dropoff'
-  return `${from} → ${to}`
-})
-
-const dateLabel = computed(() => {
-  const trip = currentTrip.value
-  if (!trip) return ''
-  return trip.startedAt.toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-})
 
 function onClose() {
   resetOverlayState()
@@ -189,9 +241,13 @@ onUnmounted(() => {
     aria-modal="true"
     aria-label="Trip map playback"
   >
-    <div class="rw-trip-map-stage__backdrop" @click="onClose" />
+    <div
+      class="rw-trip-map-stage__backdrop"
+      @click="onClose"
+    />
 
     <div class="rw-trip-map-stage__panel">
+      <!-- Header -->
       <header class="rw-trip-map-stage__header">
         <div>
           <p class="rw-trip-map-stage__title">
@@ -205,6 +261,11 @@ onUnmounted(() => {
               {{ currentIndex + 1 }} / {{ tripCount }}
             </span>
             <span v-if="dateLabel"> · {{ dateLabel }}</span>
+            <span
+              v-if="timeOfDay"
+              class="rw-tod-badge"
+              :class="timeOfDay.cls"
+            >{{ timeOfDay.label }}</span>
           </p>
         </div>
         <button
@@ -218,15 +279,22 @@ onUnmounted(() => {
         </button>
       </header>
 
-      <div class="rw-trip-map-stage__map">
+      <!-- Map area -->
+      <div
+        class="rw-trip-map-stage__map"
+        @touchstart.passive="onTouchStart"
+        @touchend.passive="onTouchEnd"
+      >
         <ClientOnly>
           <WrappedTripMap
             v-if="hasTrips"
+            ref="mapRef"
             :trips="playbackTrips"
             mode="playback"
             :active-index="currentIndex"
             :playback-speed="playbackSpeed"
             :interactive="true"
+            :force-night="isNightTrip"
             @ready="onMapReady"
             @playback-settled="onPlaybackSettled"
           />
@@ -237,15 +305,84 @@ onUnmounted(() => {
           :trip-index="currentIndex + 1"
           :trip-count="tripCount"
         />
+
+        <!-- Map overlay controls: zoom + fit -->
+        <div class="rw-map-overlay-controls">
+          <button
+            type="button"
+            class="rw-map-overlay-btn"
+            aria-label="Zoom in"
+            @click="mapRef?.zoomIn()"
+          >
+            +
+          </button>
+          <button
+            type="button"
+            class="rw-map-overlay-btn"
+            aria-label="Zoom out"
+            @click="mapRef?.zoomOut()"
+          >
+            −
+          </button>
+          <button
+            type="button"
+            class="rw-map-overlay-btn rw-map-overlay-btn--fit"
+            aria-label="Fit trip in view"
+            title="Fit to trip"
+            @click="mapRef?.fitView()"
+          >
+            ⤢
+          </button>
+        </div>
       </div>
 
-      <p
-        v-if="routeLabel"
-        class="rw-trip-map-stage__route rw-tile-clamp rw-tile-clamp--2"
-      >
-        {{ routeLabel }}
-      </p>
+      <!-- Timeline scrubber -->
+      <WrappedTripTimeline
+        v-if="tripCount > 1"
+        :trips="playbackTrips"
+        :active-index="currentIndex"
+        @select="goTo"
+      />
 
+      <!-- Trip detail strip -->
+      <div
+        v-if="routeLabel || hasStats"
+        class="rw-trip-map-stage__detail"
+      >
+        <p
+          v-if="routeLabel"
+          class="rw-trip-detail__route rw-tile-clamp rw-tile-clamp--2"
+        >
+          {{ routeLabel }}
+        </p>
+        <div
+          v-if="hasStats"
+          class="rw-trip-detail__stats"
+        >
+          <span
+            v-if="fareLabel"
+            class="rw-trip-detail__stat"
+          >{{ fareLabel }}</span>
+          <span
+            v-if="fareLabel && (distanceLabel || durationLabel)"
+            class="rw-trip-detail__sep"
+          >·</span>
+          <span
+            v-if="distanceLabel"
+            class="rw-trip-detail__stat"
+          >{{ distanceLabel }}</span>
+          <span
+            v-if="distanceLabel && durationLabel"
+            class="rw-trip-detail__sep"
+          >·</span>
+          <span
+            v-if="durationLabel"
+            class="rw-trip-detail__stat"
+          >{{ durationLabel }}</span>
+        </div>
+      </div>
+
+      <!-- Controls footer -->
       <footer class="rw-trip-map-stage__controls">
         <select
           class="rw-trip-map-stage__speed-select"
@@ -289,6 +426,16 @@ onUnmounted(() => {
           @click="next"
         >
           Next
+        </button>
+        <!-- Replay arc animation -->
+        <button
+          type="button"
+          class="rw-trip-map-stage__btn rw-trip-map-stage__btn--replay"
+          aria-label="Replay route animation"
+          :disabled="!hasTrips"
+          @click="mapRef?.replayArc()"
+        >
+          ↺
         </button>
       </footer>
     </div>

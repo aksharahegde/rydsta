@@ -79,7 +79,7 @@ function openPicker() {
         Drop your ride export here
       </p>
       <p class="dropzone__hint">
-        or click to browse — .zip, .csv, or .xlsx
+        or click to browse · .zip, .csv, or .xlsx
       </p>
     </div>
 

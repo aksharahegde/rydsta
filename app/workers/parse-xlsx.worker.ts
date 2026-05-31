@@ -29,6 +29,11 @@ self.onmessage = (event: MessageEvent<ParseXlsxMessage>) => {
     return
   }
 
+  if (!(msg.data instanceof Uint8Array)) {
+    postError('Invalid payload: data must be Uint8Array')
+    return
+  }
+
   try {
     const workbook = XLSX.read(msg.data, { type: 'array' })
     const sheetName = workbook.SheetNames[0]
