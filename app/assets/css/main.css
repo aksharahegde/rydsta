@@ -9,6 +9,8 @@
 
 @import "./bento.css";
 
+@import "./landing.css";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
