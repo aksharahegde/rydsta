@@ -14,6 +14,10 @@ function trip(startedAt: Date, fare = 100): Trip {
     distanceKm: 5,
     status: 'completed',
     vehicleType: null,
+    pickupLat: null,
+    pickupLng: null,
+    dropoffLat: null,
+    dropoffLng: null,
     sourceFile: 't.csv',
   }
 }

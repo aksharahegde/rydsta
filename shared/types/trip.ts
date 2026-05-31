@@ -13,5 +13,9 @@ export type Trip = {
   distanceKm: number | null
   status: string | null
   vehicleType: string | null
+  pickupLat: number | null
+  pickupLng: number | null
+  dropoffLat: number | null
+  dropoffLng: number | null
   sourceFile: string
 }

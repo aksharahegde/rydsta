@@ -10,6 +10,7 @@ import {
 } from '#shared/lib/wrapped-bento'
 import { buildYearHeatmap } from '#shared/lib/ride-heatmap'
 import { pickPersonality } from '#shared/lib/personality'
+import { tripsWithCoordinates } from '#shared/lib/trip-map-playback'
 import {
   computeWrappedStats,
   tripCountByYear,
@@ -50,6 +51,11 @@ const yearTrips = computed(() => tripsForYear(props.trips, selectedYear.value))
 const stats = computed(() => computeWrappedStats(props.trips, selectedYear.value))
 const personality = computed(() => pickPersonality(stats.value, yearTrips.value))
 const heatmap = computed(() => buildYearHeatmap(props.trips, selectedYear.value))
+const mapExpanded = ref(false)
+
+watch(selectedYear, () => {
+  mapExpanded.value = false
+})
 
 const personalityTileClass = computed(() =>
   getPersonalityTileClass(personality.value),
@@ -229,6 +235,25 @@ async function onDownload() {
           </p>
         </article>
 
+        <!-- Trip map -->
+        <WrappedTripMapTile
+          v-if="!capturing"
+          :trips="yearTrips"
+          :year="selectedYear"
+          @expand="mapExpanded = true"
+        />
+        <article
+          v-else
+          class="rw-tile rw-tile--trip-map rw-tile--trip-map--placeholder"
+        >
+          <p class="rw-tile-eyebrow">
+            Your routes · {{ stats.year }}
+          </p>
+          <p class="rw-tile-tagline">
+            Map preview ({{ tripsWithCoordinates(yearTrips).length }} trips)
+          </p>
+        </article>
+
         <!-- Activity heatmap -->
         <article class="rw-tile rw-tile--heatmap">
           <p class="rw-tile-eyebrow">
@@ -291,5 +316,12 @@ async function onDownload() {
         </article>
       </section>
     </div>
+
+    <WrappedTripMapStage
+      v-if="mapExpanded"
+      :trips="yearTrips"
+      :year="selectedYear"
+      @close="mapExpanded = false"
+    />
   </div>
 </template>

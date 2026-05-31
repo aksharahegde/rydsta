@@ -7,6 +7,7 @@ import {
   type CanonicalField,
 } from '../../shared/constants/providers'
 import { normalizeTrips } from '../../shared/lib/normalize-trips'
+import { tripsWithCoordinates } from '../../shared/lib/trip-map-playback'
 import type { ColumnMapping, ParsedTable } from '../../shared/types/import'
 
 const fixturePath = resolve(
@@ -68,6 +69,58 @@ describe('normalizeTrips', () => {
     expect(trips[0]?.status).toBe('completed')
     expect(trips[0]?.pickup).toBe('Koramangala 5th Block')
     expect(trips[0]?.distanceKm).toBeCloseTo(4.2 * 1.60934, 4)
+    expect(trips[0]?.pickupLat).toBeCloseTo(12.97, 2)
+    expect(trips[0]?.pickupLng).toBeCloseTo(77.59, 2)
+    expect(trips[0]?.dropoffLat).toBeCloseTo(12.95, 2)
+    expect(trips[0]?.dropoffLng).toBeCloseTo(77.67, 2)
+    expect(tripsWithCoordinates(trips)).toHaveLength(2)
+  })
+
+  it('leaves coordinates null when lat/lng columns are absent', () => {
+    const table = parseFixtureTable()
+    const headers = table.headers.filter(
+      h =>
+        ![
+          'begintrip_lat',
+          'begintrip_lng',
+          'dropoff_lat',
+          'dropoff_lng',
+          'destination_lat',
+          'destination_lng',
+        ].includes(h),
+    )
+    const dropIndices = new Set(
+      table.headers
+        .map((h, i) =>
+          [
+            'begintrip_lat',
+            'begintrip_lng',
+            'dropoff_lat',
+            'dropoff_lng',
+            'destination_lat',
+            'destination_lng',
+          ].includes(h)
+            ? i
+            : -1,
+        )
+        .filter(i => i >= 0),
+    )
+    const rows = table.rows.map(row =>
+      row.filter((_, i) => !dropIndices.has(i)),
+    )
+    const mappings = mappingsFromUberFingerprint(headers).filter(
+      m => !m.field.endsWith('Lat') && !m.field.endsWith('Lng'),
+    )
+    const trips = normalizeTrips(
+      { ...table, headers, rows },
+      'uber',
+      mappings,
+      'Rider/trips_data-0.csv',
+    )
+
+    expect(trips.length).toBeGreaterThan(0)
+    expect(trips[0]?.pickupLat).toBeNull()
+    expect(trips[0]?.dropoffLng).toBeNull()
   })
 
   it('uses begintrip_timestamp_utc when local begintrip is empty', () => {

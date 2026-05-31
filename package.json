@@ -20,6 +20,7 @@
     "fflate": "^0.8.3",
     "html-to-image": "^1.11.13",
     "lucide-vue-next": "^1.0.0",
+    "maplibre-gl": "^5.24.0",
     "nuxt": "^4.4.6",
     "papaparse": "^5.5.3",
     "reka-ui": "^2.9.8",

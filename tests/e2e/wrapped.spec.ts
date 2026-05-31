@@ -50,3 +50,31 @@ test('multi-year export switches year stats and heatmap', async ({ page }) => {
   await page.getByTestId('wrapped-year-2019').click()
   await expect(page.getByText(/rides in 2019/)).toBeVisible()
 })
+
+test('trip map tile expands and playback controls advance', async ({ page }) => {
+  await uploadCsv(page, singleYearFixture)
+
+  await expect(page.locator('.rw-tile--stat .rw-tile-big')).toHaveText('2')
+
+  const mapTile = page.getByTestId('wrapped-trip-map-tile')
+  await expect(mapTile).toBeVisible({ timeout: 15_000 })
+  await expect(mapTile.getByText(/2 trips with locations/i)).toBeVisible()
+
+  await page.getByTestId('wrapped-trip-map-expand').click()
+  await expect(page.getByTestId('wrapped-trip-map-stage')).toBeVisible()
+
+  const counter = page.getByTestId('wrapped-trip-map-counter')
+  await expect(counter).toHaveText('1 / 2', { timeout: 10_000 })
+
+  await page.getByTestId('wrapped-trip-map-next').click()
+  await expect(counter).toHaveText('2 / 2')
+
+  await page.getByTestId('wrapped-trip-map-prev').click()
+  await expect(counter).toHaveText('1 / 2')
+
+  await page.getByTestId('wrapped-trip-map-play').click()
+  await expect(page.getByTestId('wrapped-trip-map-pause')).toBeVisible({ timeout: 5_000 })
+
+  await page.getByTestId('wrapped-trip-map-close').click()
+  await expect(page.getByTestId('wrapped-trip-map-stage')).not.toBeVisible()
+})

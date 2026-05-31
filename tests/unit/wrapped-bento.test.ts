@@ -21,6 +21,10 @@ function trip(overrides: Partial<Trip> & Pick<Trip, 'startedAt'>): Trip {
     distanceKm: 10,
     status: 'completed',
     vehicleType: null,
+    pickupLat: null,
+    pickupLng: null,
+    dropoffLat: null,
+    dropoffLng: null,
     sourceFile: 't.csv',
     ...overrides,
   }

@@ -14,6 +14,10 @@ function makeTrip(overrides: Partial<Trip> = {}): Trip {
     distanceKm: 4.2,
     status: 'completed',
     vehicleType: 'UberGo',
+    pickupLat: null,
+    pickupLng: null,
+    dropoffLat: null,
+    dropoffLng: null,
     sourceFile: 'trips.csv',
     ...overrides,
   }

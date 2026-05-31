@@ -35,6 +35,65 @@ export function parseNumber(value: string): number | null {
   return Number.isFinite(n) ? n : null
 }
 
+export function parseLatitude(value: string): number | null {
+  const n = parseNumber(value)
+  if (n === null || n < -90 || n > 90) return null
+  return n
+}
+
+export function parseLongitude(value: string): number | null {
+  const n = parseNumber(value)
+  if (n === null || n < -180 || n > 180) return null
+  return n
+}
+
+const UBER_DROPOFF_LAT_HEADERS = ['dropoff_lat', 'destination_lat'] as const
+const UBER_DROPOFF_LNG_HEADERS = ['dropoff_lng', 'destination_lng'] as const
+
+function resolveCoordinates(
+  row: string[],
+  table: ParsedTable,
+  mappings: ColumnMapping[],
+  provider: RideProvider,
+): {
+  pickupLat: number | null
+  pickupLng: number | null
+  dropoffLat: number | null
+  dropoffLng: number | null
+} {
+  let pickupLat = parseLatitude(cellAt(row, mappings, 'pickupLat'))
+  let pickupLng = parseLongitude(cellAt(row, mappings, 'pickupLng'))
+  let dropoffLat = parseLatitude(cellAt(row, mappings, 'dropoffLat'))
+  let dropoffLng = parseLongitude(cellAt(row, mappings, 'dropoffLng'))
+
+  if (provider === 'uber') {
+    if (dropoffLat === null) {
+      dropoffLat = parseLatitude(
+        firstNonEmptyCell(row, table.headers, UBER_DROPOFF_LAT_HEADERS),
+      )
+    }
+    if (dropoffLng === null) {
+      dropoffLng = parseLongitude(
+        firstNonEmptyCell(row, table.headers, UBER_DROPOFF_LNG_HEADERS),
+      )
+    }
+  }
+
+  const hasPickup = pickupLat !== null && pickupLng !== null
+  const hasDropoff = dropoffLat !== null && dropoffLng !== null
+
+  if (!hasPickup || !hasDropoff) {
+    return {
+      pickupLat: null,
+      pickupLng: null,
+      dropoffLat: null,
+      dropoffLng: null,
+    }
+  }
+
+  return { pickupLat, pickupLng, dropoffLat, dropoffLng }
+}
+
 function isMilesColumn(headers: string[], columnIndex: number): boolean {
   const header = (headers[columnIndex] ?? '').toLowerCase()
   return header.includes('mile')
@@ -121,6 +180,7 @@ export function normalizeTrips(
 
     const endedAtRaw = cellAt(row, mappings, 'endedAt')
     const endedAt = endedAtRaw ? parseDate(endedAtRaw) : null
+    const coords = resolveCoordinates(row, table, mappings, provider)
 
     trips.push({
       provider,
@@ -128,6 +188,7 @@ export function normalizeTrips(
       endedAt,
       pickup: cellAt(row, mappings, 'pickup') || null,
       dropoff: cellAt(row, mappings, 'dropoff') || null,
+      ...coords,
       fare: parseNumber(cellAt(row, mappings, 'fare')),
       currency: cellAt(row, mappings, 'currency') || null,
       distanceKm: distanceKmFromRow(row, table, mappings),
