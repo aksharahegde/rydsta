@@ -14,7 +14,7 @@
       </div>
       <div class="rw-landing-preview-trip-stats__item">
         <p class="rw-landing-preview-trip-stats__eyebrow">Go-to ride</p>
-        <p class="rw-landing-preview-trip-stats__value">Uber Go</p>
+        <p class="rw-landing-preview-trip-stats__value">Economy</p>
       </div>
       <div class="rw-landing-preview-trip-stats__item">
         <p class="rw-landing-preview-trip-stats__eyebrow">Avg fare</p>

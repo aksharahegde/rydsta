@@ -6,7 +6,7 @@ useHead({ titleTemplate: '%s' })
 
 useSeoMeta({
   title: 'About | Rydsta',
-  description: 'Rydsta turns your Uber, Ola, and Rapido trip exports into a visual story. Built by Akshara Hegde. Runs entirely in your browser.',
+  description: 'Rydsta turns your ride history into a visual story. Supports CSV, XLSX, and ZIP exports. Built by Akshara Hegde. Runs entirely in your browser.',
 })
 </script>
 
@@ -46,7 +46,7 @@ useSeoMeta({
         <h1 class="rw-about__heading">Rydsta</h1>
         <p class="rw-about__sub">
           Your ride history has a story in it. Rydsta finds it,
-          built for Uber, Ola, and Rapido riders across India.
+          built for riders across India.
         </p>
         <p class="rw-about__sub">
           Drop an export. See your year as a shareable visual story:
@@ -64,8 +64,8 @@ useSeoMeta({
               <p class="rw-about__step-num">1</p>
               <p class="rw-about__step-title">Drop your export</p>
               <p class="rw-about__step-body">
-                Upload a CSV, XLSX, or ZIP from your Uber, Ola,
-                or Rapido app. Drag-and-drop or click to browse.
+                Upload a CSV, XLSX, or ZIP from your ride app.
+                Drag-and-drop or click to browse.
               </p>
             </div>
             <div class="rw-about__step">
@@ -106,29 +106,14 @@ useSeoMeta({
 
         <hr class="rw-about__rule">
 
-        <!-- Supported providers -->
+        <!-- Supported formats -->
         <section class="rw-about__section">
-          <p class="rw-about__section-label">Supported exports</p>
-          <div class="rw-about__providers">
-            <div class="rw-about__provider">
-              <span class="rw-about__provider-name">Uber</span>
-              <span class="rw-about__provider-detail">
-                Rider export → <code>trips_data-0.csv</code> from Account &gt; Privacy &gt; Download my data
-              </span>
-            </div>
-            <div class="rw-about__provider">
-              <span class="rw-about__provider-name">Ola</span>
-              <span class="rw-about__provider-detail">
-                Booking history export from the Ola app → Account &gt; Help &gt; Data requests
-              </span>
-            </div>
-            <div class="rw-about__provider">
-              <span class="rw-about__provider-name">Rapido</span>
-              <span class="rw-about__provider-detail">
-                Ride history CSV → Profile &gt; My Rides &gt; Export
-              </span>
-            </div>
-          </div>
+          <p class="rw-about__section-label">Supported formats</p>
+          <p class="rw-about__body">
+            Rydsta accepts <strong>CSV</strong>, <strong>XLSX</strong>, and <strong>ZIP</strong> exports
+            from ride apps. As long as your export includes trip date, distance, and fare columns,
+            Rydsta will parse it automatically.
+          </p>
         </section>
 
         <hr class="rw-about__rule">
@@ -144,7 +129,7 @@ useSeoMeta({
               class="rw-about__built-name"
             >Akshara Hegde</a>
             <p class="rw-about__built-tagline">
-              A personal project born from too many unexplored Uber exports.
+              A personal project born from too many unexplored ride exports.
             </p>
           </div>
         </section>
