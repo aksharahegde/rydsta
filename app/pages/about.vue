@@ -156,8 +156,6 @@ useSeoMeta({
           <span>Tiles by <a href="https://openfreemap.org" target="_blank" rel="noopener noreferrer">OpenFreeMap</a></span>
           <span class="rw-about__tech-sep">·</span>
           <span>Built with <a href="https://nuxt.com" target="_blank" rel="noopener noreferrer">Nuxt 3</a> &amp; Vue 3</span>
-          <span class="rw-about__tech-sep">·</span>
-          <span>© {{ year }}</span>
         </div>
 
       </div>
