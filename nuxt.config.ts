@@ -34,6 +34,7 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/': { prerender: true },
+    '/about': { prerender: true },
     '/upload': { ssr: false },
     '/map': { ssr: false },
     '/wrapped': { ssr: false },

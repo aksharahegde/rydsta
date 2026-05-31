@@ -12,6 +12,8 @@ import LandingPreviewTripStats from '~/components/landing/LandingPreviewTripStat
 import LandingPreviewUpload from '~/components/landing/LandingPreviewUpload.vue'
 import LandingProviderStrip from '~/components/landing/LandingProviderStrip.vue'
 
+const year = new Date().getFullYear()
+
 const description =
   'Turn your Uber, Ola, and Rapido trip exports into a shareable year-in-rides story. 100% in your browser.'
 
@@ -38,6 +40,10 @@ useSeoMeta({
         >Ride Wrapped</span>
         <div class="rw-nav__actions">
           <RideThemeToggle />
+          <NuxtLink
+            to="/about"
+            class="rw-nav-about"
+          >About</NuxtLink>
           <NuxtLink
             to="/upload"
             class="rw-nav-cta"
@@ -215,7 +221,7 @@ useSeoMeta({
             class="rw-footer-sep"
             aria-hidden="true"
           >·</span>
-          <span>© 2026</span>
+          <span>© {{ year }}</span>
         </div>
       </div>
     </footer>
