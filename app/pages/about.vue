@@ -45,11 +45,11 @@ useSeoMeta({
         <p class="rw-about__tag">About</p>
         <h1 class="rw-about__heading">Ride Wrapped</h1>
         <p class="rw-about__sub">
-          A Spotify Wrapped for your rides — built for Uber,
+          A Spotify Wrapped for your rides, built for Uber,
           Ola, and Rapido users in India.
         </p>
         <p class="rw-about__sub">
-          Drop an export. See your year as a shareable visual story —
+          Drop an export. See your year as a shareable visual story:
           stats, routes, ride personality, and a full activity heatmap.
           Everything runs in your browser. Nothing leaves your device.
         </p>
@@ -73,7 +73,7 @@ useSeoMeta({
               <p class="rw-about__step-title">Parsed in your browser</p>
               <p class="rw-about__step-body">
                 A Web Worker reads and processes your file locally.
-                No upload, no account, no server — ever.
+                No upload, no account, no server. Ever.
               </p>
             </div>
             <div class="rw-about__step">
@@ -94,7 +94,7 @@ useSeoMeta({
           <p class="rw-about__section-label">Privacy by design</p>
           <p class="rw-about__body">
             Your trip data never leaves your device. Ride Wrapped runs
-            entirely in your browser — the file you drop is parsed
+            entirely in your browser. The file you drop is parsed
             by a Web Worker and discarded the moment you close the tab.
           </p>
           <p class="rw-about__body">
@@ -113,19 +113,19 @@ useSeoMeta({
             <div class="rw-about__provider">
               <span class="rw-about__provider-name">Uber</span>
               <span class="rw-about__provider-detail">
-                Rider export — <code>trips_data-0.csv</code> from Account &gt; Privacy &gt; Download my data
+                Rider export → <code>trips_data-0.csv</code> from Account &gt; Privacy &gt; Download my data
               </span>
             </div>
             <div class="rw-about__provider">
               <span class="rw-about__provider-name">Ola</span>
               <span class="rw-about__provider-detail">
-                Booking history export from the Ola app — Account &gt; Help &gt; Data requests
+                Booking history export from the Ola app → Account &gt; Help &gt; Data requests
               </span>
             </div>
             <div class="rw-about__provider">
               <span class="rw-about__provider-name">Rapido</span>
               <span class="rw-about__provider-detail">
-                Ride history CSV — available via Profile &gt; My Rides &gt; Export
+                Ride history CSV → Profile &gt; My Rides &gt; Export
               </span>
             </div>
           </div>
