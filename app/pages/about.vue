@@ -39,7 +39,7 @@ useSeoMeta({
     </nav>
 
     <main class="rw-about">
-      <div class="rw-about__inner">
+      <div class="rw-content">
 
         <!-- Identity header -->
         <p class="rw-about__tag">About</p>
