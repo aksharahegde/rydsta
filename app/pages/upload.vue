@@ -60,6 +60,11 @@ async function onFilesSelected(files: File[]) {
   max-width: 32rem;
   margin: 0 auto;
   padding: 0 1.25rem 3rem;
+  background:
+    radial-gradient(ellipse 120% 70% at 50% -15%, var(--color-glow), transparent 55%),
+    var(--color-paper);
+  color: var(--color-ink);
+  min-height: 100dvh;
 }
 
 .upload-page__header {
@@ -70,12 +75,12 @@ async function onFilesSelected(files: File[]) {
   margin: 0 0 0.5rem;
   font-size: 1.75rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-ink);
 }
 
 .upload-page__lede {
   margin: 0;
-  color: #475569;
+  color: var(--color-ink-2);
   line-height: 1.5;
 }
 
@@ -88,15 +93,15 @@ async function onFilesSelected(files: File[]) {
   margin: 1rem 0 0;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  background: #fef2f2;
-  color: #b91c1c;
+  background: oklch(55% 0.2 25 / 0.12);
+  color: oklch(55% 0.22 25);
   font-size: 0.875rem;
 }
 
 .upload-page__privacy {
   margin: 1.5rem 0 0;
   font-size: 0.8125rem;
-  color: #94a3b8;
+  color: var(--color-ink-2);
   line-height: 1.5;
 }
 </style>

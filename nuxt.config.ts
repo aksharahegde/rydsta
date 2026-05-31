@@ -6,6 +6,17 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   future: { compatibilityVersion: 4 },
   modules: ['@nuxtjs/seo', '@vueuse/nuxt', 'shadcn-nuxt'],
+  app: {
+    head: {
+      script: [
+        {
+          key: 'ride-theme-init',
+          innerHTML: `(function(){try{var k='ride-wrapped-color-mode',s=localStorage.getItem(k),d=s==='dark';if(d)document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark')}catch(e){}})();`,
+          tagPosition: 'head',
+        },
+      ],
+    },
+  },
   css: ['~/assets/css/main.css'],
   shadcn: {
     prefix: '',

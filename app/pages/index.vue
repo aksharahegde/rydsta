@@ -24,10 +24,13 @@ useSeoMeta({
           class="rw-wordmark"
           aria-label="Ride Wrapped"
         >Ride Wrapped</span>
-        <NuxtLink
-          to="/upload"
-          class="rw-nav-cta"
-        >Get started</NuxtLink>
+        <div class="rw-nav__actions">
+          <RideThemeToggle />
+          <NuxtLink
+            to="/upload"
+            class="rw-nav-cta"
+          >Get started</NuxtLink>
+        </div>
       </div>
     </nav>
 
@@ -162,7 +165,9 @@ useSeoMeta({
 
 /* ── Page shell ──────────────────────────────────────────────── */
 .rw-page {
-  background-color: var(--color-paper);
+  background:
+    radial-gradient(ellipse 120% 70% at 50% -15%, var(--color-glow), transparent 55%),
+    var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-body);
   min-height: 100dvh;
@@ -182,6 +187,12 @@ useSeoMeta({
   align-items: center;
   justify-content: space-between;
   padding-block: var(--space-sm);
+}
+
+.rw-nav__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
 .rw-wordmark {
@@ -224,10 +235,10 @@ useSeoMeta({
 .rw-hero-tag {
   font-family: var(--font-body);
   font-size: var(--text-xs);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.10em;
   text-transform: uppercase;
-  color: var(--color-ink-2);
+  color: var(--color-accent);
   margin-bottom: var(--space-xs);
 }
 
@@ -257,24 +268,26 @@ useSeoMeta({
   gap: var(--space-xs);
   margin-top: var(--space-lg);
   padding: var(--space-sm) var(--space-lg);
-  background-color: var(--color-ink);
-  color: var(--color-paper);
+  background-color: var(--color-hero-cta-bg);
+  color: var(--color-hero-cta-fg);
   font-family: var(--font-display);
   font-size: var(--text-md);
   font-weight: 700;
   letter-spacing: -0.02em;
   text-decoration: none;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--color-ink);
+  border: 1px solid var(--color-hero-cta-bg);
   transition:
     background-color var(--dur-short) var(--ease-out),
+    border-color var(--dur-short) var(--ease-out),
     transform var(--dur-short) var(--ease-out),
     box-shadow var(--dur-short) var(--ease-out);
 }
 
 .rw-hero-cta:hover {
-  background-color: oklch(22% 0.012 60);
-  box-shadow: 0 8px 24px -10px oklch(18% 0.01 60 / 0.35);
+  background-color: var(--color-hero-cta-hover);
+  border-color: var(--color-hero-cta-hover);
+  box-shadow: 0 8px 24px -10px var(--color-hero-shadow);
 }
 
 .rw-hero-cta:focus-visible {
