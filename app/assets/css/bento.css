@@ -1293,13 +1293,6 @@
   border-radius: 0;
 }
 
-.rw-trip-map-stage__route {
-  margin: 0;
-  padding: var(--space-sm) var(--space-md);
-  font-size: var(--text-sm);
-  color: var(--color-ink-2);
-  border-top: 1px solid var(--color-rule);
-}
 
 .rw-trip-map-stage__controls {
   display: flex;
@@ -1348,6 +1341,212 @@
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-paper);
+}
+
+/* Replay button: square, not flex:1 */
+.rw-trip-map-stage__btn--replay {
+  flex: 0 0 auto;
+  width: 2.75rem;
+  font-size: var(--text-md);
+  line-height: 1;
+}
+
+/* ── Map overlay controls (zoom +/- / fit) ───────────────────── */
+.rw-map-overlay-controls {
+  position: absolute;
+  bottom: var(--space-md);
+  right: var(--space-sm);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.rw-map-overlay-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-rule);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px -3px var(--color-shadow);
+  transition:
+    background-color var(--dur-short) var(--ease-out),
+    transform var(--dur-short) var(--ease-out);
+}
+
+.rw-map-overlay-btn:hover {
+  background: var(--color-paper-2);
+  transform: translateY(-1px);
+}
+
+.rw-map-overlay-btn:active {
+  transform: translateY(0);
+}
+
+.rw-map-overlay-btn:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Fit button uses a slightly smaller glyph */
+.rw-map-overlay-btn--fit {
+  font-size: var(--text-base);
+  color: var(--color-ink-2);
+}
+
+/* ── Time-of-day badge ───────────────────────────────────────── */
+.rw-tod-badge {
+  display: inline-block;
+  margin-left: var(--space-2xs);
+  padding: 0.1em 0.55em;
+  border-radius: var(--radius-pill);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+.rw-tod--night {
+  background: oklch(22% 0.04 275 / 0.85);
+  color: oklch(90% 0.04 275);
+}
+
+.rw-tod--morning {
+  background: oklch(88% 0.09 80 / 0.55);
+  color: oklch(38% 0.1 70);
+}
+
+.rw-tod--midday {
+  background: oklch(90% 0.08 100 / 0.55);
+  color: oklch(40% 0.1 95);
+}
+
+.rw-tod--evening {
+  background: oklch(80% 0.1 45 / 0.35);
+  color: oklch(38% 0.12 40);
+}
+
+.dark .rw-tod--morning,
+.dark .rw-tod--midday,
+.dark .rw-tod--evening {
+  background: oklch(32% 0.06 80 / 0.5);
+  color: oklch(82% 0.08 80);
+}
+
+/* ── Trip detail strip ───────────────────────────────────────── */
+.rw-trip-map-stage__detail {
+  padding: var(--space-xs) var(--space-md);
+  border-top: 1px solid var(--color-rule);
+  min-height: 0;
+}
+
+.rw-trip-detail__route {
+  font-size: var(--text-sm);
+  color: var(--color-ink-2);
+  margin: 0 0 var(--space-3xs);
+  line-height: 1.4;
+}
+
+.rw-trip-detail__stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  flex-wrap: wrap;
+}
+
+.rw-trip-detail__stat {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.rw-trip-detail__sep {
+  color: var(--color-ink-2);
+  font-size: var(--text-xs);
+  user-select: none;
+}
+
+/* ── Trip timeline scrubber ──────────────────────────────────── */
+.rw-timeline {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: var(--space-xs) var(--space-md) var(--space-2xs);
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  border-top: 1px solid var(--color-rule);
+  min-height: 2.5rem;
+}
+
+.rw-timeline::-webkit-scrollbar {
+  display: none;
+}
+
+.rw-timeline__slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3xs);
+  flex-shrink: 0;
+}
+
+.rw-timeline__month {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-2);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.rw-timeline__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: var(--color-rule);
+  transition:
+    background-color var(--dur-short) var(--ease-out),
+    transform var(--dur-short) var(--ease-out);
+}
+
+.rw-timeline__dot:hover {
+  background: var(--color-ink-2);
+  transform: scale(1.3);
+}
+
+.rw-timeline__dot:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.rw-timeline__dot--past {
+  background: var(--color-accent-border);
+  opacity: 0.6;
+}
+
+.rw-timeline__dot--active {
+  background: var(--color-accent);
+  transform: scale(1.5);
+  box-shadow: 0 0 0 2px var(--color-paper), 0 0 0 3.5px var(--color-accent);
 }
 
 /* ── Theme toggle ────────────────────────────────────────────── */

@@ -33,12 +33,14 @@ const props = withDefaults(
     mode?: 'overview' | 'playback'
     interactive?: boolean
     playbackSpeed?: number
+    forceNight?: boolean
   }>(),
   {
     activeIndex: 0,
     mode: 'overview',
     interactive: true,
     playbackSpeed: 1,
+    forceNight: false,
   },
 )
 
@@ -64,7 +66,7 @@ const overviewTrips = computed(() => tripsForMapOverview(props.trips))
 const routeColor = computed(() => (isDark.value ? '#f8f6f2' : '#1c2233'))
 
 function mapStyleUrl(): string {
-  return isDark.value ? MAP_STYLE_DARK : MAP_STYLE_LIGHT
+  return (isDark.value || props.forceNight) ? MAP_STYLE_DARK : MAP_STYLE_LIGHT
 }
 
 function addTripLayers() {
@@ -426,6 +428,10 @@ watch(isDark, () => {
   reloadStyle()
 })
 
+watch(() => props.forceNight, () => {
+  reloadStyle()
+})
+
 watch(routeColor, () => {
   updateRouteColor()
 })
@@ -444,6 +450,21 @@ onMounted(() => {
     resizeObserver.observe(containerRef.value)
   }
 })
+
+function zoomIn() { map?.zoomIn({ duration: 300 }) }
+function zoomOut() { map?.zoomOut({ duration: 300 }) }
+function fitView() { fitCamera(props.mode === 'playback' ? 48 : 28) }
+function replayArc() {
+  if (props.mode !== 'playback') return
+  const trip = coordTrips.value[props.activeIndex]
+  if (!trip) return
+  const arc = tripArcGeoJson(trip)
+  if (!arc) return
+  setGeoJson('trip-arc', { type: 'FeatureCollection', features: [] })
+  animateArc(arc.geometry.coordinates)
+}
+
+defineExpose({ zoomIn, zoomOut, fitView, replayArc })
 
 onUnmounted(() => {
   cancelArcAnimation()
