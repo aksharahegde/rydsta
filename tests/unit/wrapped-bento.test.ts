@@ -16,6 +16,7 @@ function trip(overrides: Partial<Trip> & Pick<Trip, 'startedAt'>): Trip {
     endedAt: null,
     pickup: 'Koramangala',
     dropoff: 'Airport',
+    city: null,
     fare: 200,
     currency: 'INR',
     distanceKm: 10,

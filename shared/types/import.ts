@@ -22,6 +22,7 @@ export type CanonicalField =
   | 'pickupLng'
   | 'dropoffLat'
   | 'dropoffLng'
+  | 'city'
   | 'fare'
   | 'currency'
   | 'distanceKm'

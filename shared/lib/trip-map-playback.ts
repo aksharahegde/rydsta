@@ -15,6 +15,14 @@ export type TripArcGeoJson = {
 
 const DEFAULT_ARC_SEGMENTS = 24
 const BOUNDS_PADDING = 0.08
+const GEO_BIN_SIZE = 0.05
+const MIN_BOUNDS_SPAN = 0.02
+
+export type PrimaryCity = {
+  label: string
+  tripCount: number
+  fromCityField: boolean
+}
 
 export function tripHasCoordinates(trip: Trip): boolean {
   return (
@@ -98,8 +106,8 @@ export function boundsForTrips(trips: Trip[]): MapBounds | null {
     }
   }
 
-  const lngPad = Math.max((maxLng - minLng) * BOUNDS_PADDING, 0.02)
-  const latPad = Math.max((maxLat - minLat) * BOUNDS_PADDING, 0.02)
+  const lngPad = Math.max((maxLng - minLng) * BOUNDS_PADDING, MIN_BOUNDS_SPAN / 2)
+  const latPad = Math.max((maxLat - minLat) * BOUNDS_PADDING, MIN_BOUNDS_SPAN / 2)
 
   return [
     [minLng - lngPad, minLat - latPad],
@@ -109,6 +117,106 @@ export function boundsForTrips(trips: Trip[]): MapBounds | null {
 
 export function boundsForTrip(trip: Trip): MapBounds | null {
   return boundsForTrips([trip])
+}
+
+function densestPickupBin(trips: Trip[]): {
+  latBin: number
+  lngBin: number
+  count: number
+} | null {
+  const mapped = tripsWithCoordinates(trips)
+  if (mapped.length === 0) return null
+
+  const bins = new Map<string, number>()
+  for (const trip of mapped) {
+    const latBin = Math.round(trip.pickupLat! / GEO_BIN_SIZE)
+    const lngBin = Math.round(trip.pickupLng! / GEO_BIN_SIZE)
+    const key = `${latBin},${lngBin}`
+    bins.set(key, (bins.get(key) ?? 0) + 1)
+  }
+
+  let bestKey = ''
+  let bestCount = 0
+  for (const [key, count] of bins) {
+    if (count > bestCount) {
+      bestCount = count
+      bestKey = key
+    }
+  }
+  if (!bestKey) return null
+
+  const [latBin, lngBin] = bestKey.split(',').map(Number)
+  return { latBin: latBin!, lngBin: lngBin!, count: bestCount }
+}
+
+function tripsInDensestBin(trips: Trip[]): Trip[] {
+  const bin = densestPickupBin(trips)
+  if (!bin) return []
+
+  return tripsWithCoordinates(trips).filter((trip) => {
+    const latBin = Math.round(trip.pickupLat! / GEO_BIN_SIZE)
+    const lngBin = Math.round(trip.pickupLng! / GEO_BIN_SIZE)
+    return latBin === bin.latBin && lngBin === bin.lngBin
+  })
+}
+
+export function primaryCityFromTrips(trips: Trip[]): PrimaryCity | null {
+  const mapped = tripsWithCoordinates(trips)
+  if (mapped.length === 0) return null
+
+  const cityCounts = new Map<string, number>()
+  for (const trip of mapped) {
+    const city = trip.city?.trim()
+    if (!city) continue
+    cityCounts.set(city, (cityCounts.get(city) ?? 0) + 1)
+  }
+
+  if (cityCounts.size > 0) {
+    let label = ''
+    let tripCount = 0
+    for (const [city, count] of cityCounts) {
+      if (count > tripCount) {
+        tripCount = count
+        label = city
+      }
+    }
+    return { label, tripCount, fromCityField: true }
+  }
+
+  const bin = densestPickupBin(mapped)
+  if (!bin) return null
+
+  return {
+    label: 'Your trips',
+    tripCount: bin.count,
+    fromCityField: false,
+  }
+}
+
+export function tripsForMapOverview(trips: Trip[]): Trip[] {
+  const primary = primaryCityFromTrips(trips)
+  if (!primary) return []
+
+  if (primary.fromCityField) {
+    return tripsWithCoordinates(trips).filter(
+      trip => trip.city?.trim() === primary.label,
+    )
+  }
+
+  return tripsInDensestBin(trips)
+}
+
+export function boundsForOverview(trips: Trip[]): MapBounds | null {
+  return boundsForTrips(tripsForMapOverview(trips))
+}
+
+export function mapCenterForOverview(trips: Trip[]): LngLat | null {
+  const bounds = boundsForOverview(trips)
+  if (!bounds) return null
+  return [
+    (bounds[0][0] + bounds[1][0]) / 2,
+    (bounds[0][1] + bounds[1][1]) / 2,
+  ]
 }
 
 export function sliceArcCoordinates(

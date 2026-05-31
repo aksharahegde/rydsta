@@ -9,6 +9,7 @@ function makeTrip(overrides: Partial<Trip> = {}): Trip {
     endedAt: null,
     pickup: 'Koramangala',
     dropoff: 'Indiranagar',
+    city: null,
     fare: 285.5,
     currency: 'INR',
     distanceKm: 4.2,

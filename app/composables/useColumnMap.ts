@@ -11,6 +11,7 @@ export const CANONICAL_FIELDS: CanonicalField[] = [
   'pickupLng',
   'dropoffLat',
   'dropoffLng',
+  'city',
   'fare',
   'currency',
   'distanceKm',

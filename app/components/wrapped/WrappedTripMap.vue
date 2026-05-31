@@ -2,16 +2,24 @@
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import {
+  MAP_OVERVIEW_MAX_ZOOM,
+  MAP_OVERVIEW_MIN_ZOOM,
+  MAP_PLAYBACK_MAX_ZOOM,
+  MAP_STYLE_DARK,
+  MAP_STYLE_LIGHT,
+} from '~/constants/map-styles'
+import {
   allTripPointsGeoJson,
+  boundsForOverview,
   boundsForTrip,
-  boundsForTrips,
+  mapCenterForOverview,
   sliceArcCoordinates,
   tripArcGeoJson,
+  tripsForMapOverview,
   tripsWithCoordinates,
 } from '#shared/lib/trip-map-playback'
 import type { Trip } from '#shared/types/trip'
 
-const MAP_STYLE = 'https://demotiles.maplibre.org/style.json'
 const ARC_DRAW_MS = 450
 
 const props = withDefaults(
@@ -28,122 +36,166 @@ const props = withDefaults(
   },
 )
 
+const { isDark } = useRideTheme()
+
 const containerRef = ref<HTMLElement | null>(null)
 let map: maplibregl.Map | null = null
 let resizeObserver: ResizeObserver | null = null
 let arcFrame = 0
 let arcStart = 0
+let layersReady = false
 
 const coordTrips = computed(() => tripsWithCoordinates(props.trips))
+const overviewTrips = computed(() => tripsForMapOverview(props.trips))
+
+const routeColor = computed(() => (isDark.value ? '#f8f6f2' : '#1c2233'))
+
+function mapStyleUrl(): string {
+  return isDark.value ? MAP_STYLE_DARK : MAP_STYLE_LIGHT
+}
+
+function addTripLayers() {
+  if (!map || map.getSource('trip-points')) {
+    layersReady = Boolean(map?.getSource('trip-points'))
+    return
+  }
+
+  map.addSource('trip-points', {
+    type: 'geojson',
+    data: allTripPointsGeoJson([]),
+  })
+
+  map.addLayer({
+    id: 'trip-points-pickup',
+    type: 'circle',
+    source: 'trip-points',
+    filter: ['==', ['get', 'kind'], 'pickup'],
+    paint: {
+      'circle-radius': 3,
+      'circle-color': '#c88a2e',
+      'circle-opacity': 0.55,
+      'circle-stroke-width': 1,
+      'circle-stroke-color': '#f8f6f2',
+    },
+  })
+
+  map.addLayer({
+    id: 'trip-points-dropoff',
+    type: 'circle',
+    source: 'trip-points',
+    filter: ['==', ['get', 'kind'], 'dropoff'],
+    paint: {
+      'circle-radius': 2.5,
+      'circle-color': '#1c2233',
+      'circle-opacity': 0.45,
+      'circle-stroke-width': 1,
+      'circle-stroke-color': '#c88a2e',
+    },
+  })
+
+  map.addSource('trip-arc', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  })
+
+  map.addLayer({
+    id: 'trip-arc-line',
+    type: 'line',
+    source: 'trip-arc',
+    paint: {
+      'line-color': routeColor.value,
+      'line-width': 4,
+      'line-opacity': 0.95,
+    },
+    layout: {
+      'line-cap': 'round',
+      'line-join': 'round',
+    },
+  })
+
+  map.addSource('trip-active-pickup', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  })
+
+  map.addSource('trip-active-dropoff', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  })
+
+  map.addLayer({
+    id: 'trip-active-pickup',
+    type: 'circle',
+    source: 'trip-active-pickup',
+    paint: {
+      'circle-radius': 9,
+      'circle-color': '#c88a2e',
+      'circle-stroke-width': 2.5,
+      'circle-stroke-color': '#f8f6f2',
+    },
+  })
+
+  map.addLayer({
+    id: 'trip-active-dropoff',
+    type: 'circle',
+    source: 'trip-active-dropoff',
+    paint: {
+      'circle-radius': 8,
+      'circle-color': '#1c2233',
+      'circle-stroke-width': 2.5,
+      'circle-stroke-color': '#c88a2e',
+    },
+  })
+
+  layersReady = true
+}
+
+function onStyleReady() {
+  if (!map) return
+  addTripLayers()
+  scheduleSync()
+}
+
+function scheduleSync() {
+  if (!map) return
+  if (map.isStyleLoaded()) {
+    syncMap()
+    map.once('idle', () => syncMap())
+  }
+}
 
 function ensureMap() {
   if (!containerRef.value || map) return
 
+  const center = mapCenterForOverview(props.trips) ?? [77.59, 12.97]
+
   map = new maplibregl.Map({
     container: containerRef.value,
-    style: MAP_STYLE,
+    style: mapStyleUrl(),
+    center,
+    zoom: MAP_OVERVIEW_MIN_ZOOM,
     attributionControl: false,
     interactive: props.interactive,
     fadeDuration: 0,
+    maxPitch: 0,
+    renderWorldCopies: false,
   })
 
-  map.on('load', () => {
-    if (!map) return
-
-    map.addSource('trip-points', {
-      type: 'geojson',
-      data: allTripPointsGeoJson([]),
-    })
-
-    map.addLayer({
-      id: 'trip-points-pickup',
-      type: 'circle',
-      source: 'trip-points',
-      filter: ['==', ['get', 'kind'], 'pickup'],
-      paint: {
-        'circle-radius': 4,
-        'circle-color': '#c88a2e',
-        'circle-opacity': 0.85,
-        'circle-stroke-width': 1,
-        'circle-stroke-color': '#f8f6f2',
-      },
-    })
-
-    map.addLayer({
-      id: 'trip-points-dropoff',
-      type: 'circle',
-      source: 'trip-points',
-      filter: ['==', ['get', 'kind'], 'dropoff'],
-      paint: {
-        'circle-radius': 3,
-        'circle-color': '#1c2233',
-        'circle-opacity': 0.9,
-        'circle-stroke-width': 1,
-        'circle-stroke-color': '#c88a2e',
-      },
-    })
-
-    map.addSource('trip-arc', {
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features: [] },
-    })
-
-    map.addLayer({
-      id: 'trip-arc-line',
-      type: 'line',
-      source: 'trip-arc',
-      paint: {
-        'line-color': '#c88a2e',
-        'line-width': 3,
-        'line-opacity': 0.95,
-      },
-      layout: {
-        'line-cap': 'round',
-        'line-join': 'round',
-      },
-    })
-
-    map.addSource('trip-active-pickup', {
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features: [] },
-    })
-
-    map.addSource('trip-active-dropoff', {
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features: [] },
-    })
-
-    map.addLayer({
-      id: 'trip-active-pickup',
-      type: 'circle',
-      source: 'trip-active-pickup',
-      paint: {
-        'circle-radius': 8,
-        'circle-color': '#c88a2e',
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#f8f6f2',
-      },
-    })
-
-    map.addLayer({
-      id: 'trip-active-dropoff',
-      type: 'circle',
-      source: 'trip-active-dropoff',
-      paint: {
-        'circle-radius': 7,
-        'circle-color': '#1c2233',
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#c88a2e',
-      },
-    })
-
-    syncMap()
+  map.on('load', onStyleReady)
+  map.on('styledata', () => {
+    if (!map?.isStyleLoaded()) return
+    if (!layersReady) onStyleReady()
   })
 }
 
 function setGeoJson(sourceId: string, data: object) {
   const source = map?.getSource(sourceId) as maplibregl.GeoJSONSource | undefined
   source?.setData(data as maplibregl.GeoJSONSource['data'])
+}
+
+function updateRouteColor() {
+  if (!map?.getLayer('trip-arc-line')) return
+  map.setPaintProperty('trip-arc-line', 'line-color', routeColor.value)
 }
 
 function cancelArcAnimation() {
@@ -180,26 +232,40 @@ function animateArc(fullCoords: ReturnType<typeof sliceArcCoordinates>) {
   arcFrame = requestAnimationFrame(tick)
 }
 
-function fitBounds(padding = 40) {
+function fitCamera(padding = 40) {
   if (!map) return
-  const bounds =
-    props.mode === 'playback'
-      ? boundsForTrip(coordTrips.value[props.activeIndex]!)
-      : boundsForTrips(props.trips)
 
-  if (!bounds) return
+  const isPlayback = props.mode === 'playback'
+  const bounds = isPlayback
+    ? boundsForTrip(coordTrips.value[props.activeIndex]!)
+    : boundsForOverview(props.trips)
 
-  map.fitBounds(bounds, {
-    padding,
-    duration: props.mode === 'playback' ? 600 : 0,
-    maxZoom: props.mode === 'playback' ? 14 : 12,
-  })
+  if (bounds) {
+    map.fitBounds(bounds, {
+      padding,
+      duration: isPlayback ? 600 : 0,
+      maxZoom: isPlayback ? MAP_PLAYBACK_MAX_ZOOM : MAP_OVERVIEW_MAX_ZOOM,
+      minZoom: MAP_OVERVIEW_MIN_ZOOM,
+    })
+    return
+  }
+
+  const center = mapCenterForOverview(props.trips)
+  if (center) {
+    map.flyTo({
+      center,
+      zoom: MAP_OVERVIEW_MAX_ZOOM,
+      duration: isPlayback ? 600 : 0,
+    })
+  }
 }
 
 function syncOverview() {
-  if (!map?.isStyleLoaded()) return
+  if (!map?.isStyleLoaded() || !layersReady) return
 
-  setGeoJson('trip-points', allTripPointsGeoJson(props.trips))
+  updateRouteColor()
+
+  setGeoJson('trip-points', allTripPointsGeoJson(overviewTrips.value))
   setGeoJson('trip-arc', { type: 'FeatureCollection', features: [] })
   setGeoJson('trip-active-pickup', { type: 'FeatureCollection', features: [] })
   setGeoJson('trip-active-dropoff', { type: 'FeatureCollection', features: [] })
@@ -219,11 +285,13 @@ function syncOverview() {
     )
   }
 
-  fitBounds(24)
+  fitCamera(props.mode === 'overview' && !props.interactive ? 16 : 28)
 }
 
 function syncPlayback() {
-  if (!map?.isStyleLoaded()) return
+  if (!map?.isStyleLoaded() || !layersReady) return
+
+  updateRouteColor()
 
   const trip = coordTrips.value[props.activeIndex]
   if (!trip) {
@@ -272,20 +340,34 @@ function syncPlayback() {
     animateArc(arc.geometry.coordinates)
   }
 
-  fitBounds(props.mode === 'playback' ? 56 : 40)
+  fitCamera(48)
 }
 
 function syncMap() {
-  if (!map?.isStyleLoaded()) return
+  if (!map?.isStyleLoaded() || !layersReady) return
   if (props.mode === 'overview') syncOverview()
   else syncPlayback()
 }
 
+function reloadStyle() {
+  if (!map) return
+  layersReady = false
+  map.setStyle(mapStyleUrl())
+}
+
 watch(
   () => [props.trips, props.activeIndex, props.mode] as const,
-  () => syncMap(),
+  () => scheduleSync(),
   { deep: true },
 )
+
+watch(isDark, () => {
+  reloadStyle()
+})
+
+watch(routeColor, () => {
+  updateRouteColor()
+})
 
 watch(containerRef, (el) => {
   if (el) ensureMap()
@@ -294,7 +376,10 @@ watch(containerRef, (el) => {
 onMounted(() => {
   ensureMap()
   if (containerRef.value) {
-    resizeObserver = new ResizeObserver(() => map?.resize())
+    resizeObserver = new ResizeObserver(() => {
+      map?.resize()
+      scheduleSync()
+    })
     resizeObserver.observe(containerRef.value)
   }
 })
@@ -304,6 +389,7 @@ onUnmounted(() => {
   resizeObserver?.disconnect()
   map?.remove()
   map = null
+  layersReady = false
 })
 </script>
 
@@ -320,7 +406,7 @@ onUnmounted(() => {
 .rw-trip-map {
   width: 100%;
   height: 100%;
-  min-height: 10rem;
+  min-height: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;
   background: var(--color-paper-2);

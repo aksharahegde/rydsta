@@ -9,6 +9,7 @@ export type CanonicalField =
   | 'pickupLng'
   | 'dropoffLat'
   | 'dropoffLng'
+  | 'city'
   | 'fare'
   | 'currency'
   | 'distanceKm'
@@ -51,6 +52,7 @@ export const PROVIDER_FINGERPRINTS: ProviderFingerprint[] = [
       pickupLng: 'begintrip_lng',
       dropoffLat: 'dropoff_lat',
       dropoffLng: 'dropoff_lng',
+      city: 'city_name',
       fare: 'fare_amount',
       currency: 'currency_code',
       distanceKm: 'trip_distance_miles',

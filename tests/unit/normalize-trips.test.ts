@@ -67,6 +67,7 @@ describe('normalizeTrips', () => {
     expect(trips[1]?.fare).toBeCloseTo(890, 2)
     expect(trips[0]?.currency).toBe('INR')
     expect(trips[0]?.status).toBe('completed')
+    expect(trips[0]?.city).toBe('Bengaluru')
     expect(trips[0]?.pickup).toBe('Koramangala 5th Block')
     expect(trips[0]?.distanceKm).toBeCloseTo(4.2 * 1.60934, 4)
     expect(trips[0]?.pickupLat).toBeCloseTo(12.97, 2)

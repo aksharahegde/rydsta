@@ -15,6 +15,7 @@ export const COLUMN_SYNONYMS: Record<CanonicalField, string[]> = {
   pickupLng: ['begintrip_lng', 'pickup lng', 'pickup longitude', 'start lng'],
   dropoffLat: ['dropoff_lat', 'destination_lat', 'drop lat', 'end lat'],
   dropoffLng: ['dropoff_lng', 'destination_lng', 'drop lng', 'end lng'],
+  city: ['city_name', 'city', 'metro', 'market'],
   fare: ['fare_amount', 'fare', 'amount', 'total', 'trip fare'],
   currency: ['currency_code', 'currency'],
   distanceKm: ['trip_distance_miles', 'distance', 'km'],

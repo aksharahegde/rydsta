@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import {
   arcLineCoordinates,
+  boundsForOverview,
   boundsForTrips,
+  primaryCityFromTrips,
   sliceArcCoordinates,
   tripArcGeoJson,
   tripHasCoordinates,
@@ -16,6 +18,7 @@ function trip(overrides: Partial<Trip> & Pick<Trip, 'startedAt'>): Trip {
     endedAt: null,
     pickup: 'A',
     dropoff: 'B',
+    city: 'Bengaluru',
     pickupLat: 12.97,
     pickupLng: 77.59,
     dropoffLat: 12.95,
@@ -29,6 +32,45 @@ function trip(overrides: Partial<Trip> & Pick<Trip, 'startedAt'>): Trip {
     ...overrides,
   }
 }
+
+describe('primaryCityFromTrips', () => {
+  it('picks city with most trips from city_name', () => {
+    const trips = [
+      trip({ startedAt: new Date('2025-01-01'), city: 'Bengaluru' }),
+      trip({ startedAt: new Date('2025-02-01'), city: 'Bengaluru' }),
+      trip({ startedAt: new Date('2025-03-01'), city: 'Mumbai' }),
+    ]
+    const primary = primaryCityFromTrips(trips)
+    expect(primary?.label).toBe('Bengaluru')
+    expect(primary?.tripCount).toBe(2)
+    expect(primary?.fromCityField).toBe(true)
+  })
+
+  it('boundsForOverview uses primary city trips only', () => {
+    const trips = [
+      trip({
+        startedAt: new Date('2025-01-01'),
+        city: 'Bengaluru',
+        pickupLat: 12.97,
+        pickupLng: 77.59,
+        dropoffLat: 12.95,
+        dropoffLng: 77.67,
+      }),
+      trip({
+        startedAt: new Date('2025-02-01'),
+        city: 'Mumbai',
+        pickupLat: 19.08,
+        pickupLng: 72.88,
+        dropoffLat: 19.1,
+        dropoffLng: 72.9,
+      }),
+    ]
+    const bounds = boundsForOverview(trips)
+    expect(bounds).not.toBeNull()
+    expect(bounds![0][0]).toBeGreaterThan(77)
+    expect(bounds![1][0]).toBeLessThan(78)
+  })
+})
 
 describe('trip-map-playback', () => {
   it('tripHasCoordinates requires all four values', () => {

@@ -13,6 +13,7 @@ const FIELD_LABELS: Record<CanonicalField, string> = {
   pickupLng: 'Pickup longitude',
   dropoffLat: 'Dropoff latitude',
   dropoffLng: 'Dropoff longitude',
+  city: 'City',
   fare: 'Fare',
   currency: 'Currency',
   distanceKm: 'Distance (km)',

@@ -188,6 +188,7 @@ export function normalizeTrips(
       endedAt,
       pickup: cellAt(row, mappings, 'pickup') || null,
       dropoff: cellAt(row, mappings, 'dropoff') || null,
+      city: cellAt(row, mappings, 'city') || null,
       ...coords,
       fare: parseNumber(cellAt(row, mappings, 'fare')),
       currency: cellAt(row, mappings, 'currency') || null,

@@ -9,6 +9,7 @@ function trip(startedAt: Date, fare = 100): Trip {
     endedAt: null,
     pickup: 'A',
     dropoff: 'B',
+    city: null,
     fare,
     currency: 'INR',
     distanceKm: 5,

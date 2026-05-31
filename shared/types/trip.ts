@@ -8,6 +8,7 @@ export type Trip = {
   endedAt: Date | null
   pickup: string | null
   dropoff: string | null
+  city: string | null
   fare: number | null
   currency: string | null
   distanceKm: number | null
