@@ -26,7 +26,7 @@ export default defineNuxtConfig({
     componentDir: '@/components/ui',
   },
   site: {
-    url: 'https://rydsta.vercel.app',
+    url: 'https://rydsta.akshara.dev',
     name: 'Rydsta',
     description:
       'Turn your Uber, Ola, and Rapido trip exports into a visual ride story. 100% in your browser.',
@@ -38,6 +38,7 @@ export default defineNuxtConfig({
   routeRules: {
     '/': { prerender: true },
     '/about': { prerender: true },
+    '/privacy-policy': { prerender: true },
     '/upload': { ssr: false },
     '/map': { ssr: false },
     '/wrapped': { ssr: false },

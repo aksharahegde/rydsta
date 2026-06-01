@@ -448,6 +448,26 @@
   color: var(--color-rule);
 }
 
+.rw-footer-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rw-footer-link:hover {
+  color: var(--color-accent);
+}
+
+.rw-about__inline-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rw-about__inline-link:hover {
+  color: var(--color-ink);
+}
+
 /* ── Preview shared helpers ──────────────────────────────────── */
 .rw-landing-preview {
   height: 100%;

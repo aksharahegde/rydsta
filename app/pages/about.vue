@@ -32,6 +32,10 @@ useSeoMeta({
             aria-current="page"
           >About</NuxtLink>
           <NuxtLink
+            to="/privacy-policy"
+            class="rw-nav-about"
+          >Privacy</NuxtLink>
+          <NuxtLink
             to="/upload"
             class="rw-nav-cta"
           >Get started</NuxtLink>
@@ -103,6 +107,13 @@ useSeoMeta({
             account required. The only data that persists is what you
             choose to download.
           </p>
+          <p class="rw-about__body">
+            Read the full
+            <NuxtLink
+              to="/privacy-policy"
+              class="rw-about__inline-link"
+            >privacy policy</NuxtLink>.
+          </p>
         </section>
 
         <hr class="rw-about__rule">
@@ -156,6 +167,14 @@ useSeoMeta({
           <span class="rw-footer-brand">
             <RideLogo size="sm" />
           </span>
+          <span
+            class="rw-footer-sep"
+            aria-hidden="true"
+          >·</span>
+          <NuxtLink
+            to="/privacy-policy"
+            class="rw-footer-link"
+          >Privacy policy</NuxtLink>
           <span
             class="rw-footer-sep"
             aria-hidden="true"
