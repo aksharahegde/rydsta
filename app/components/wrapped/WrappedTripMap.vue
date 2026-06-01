@@ -8,6 +8,10 @@ import {
   MAP_STYLE_LIGHT,
 } from '~/constants/map-styles'
 import {
+  bindMapStyleFallbacks,
+  patchLibertyStyleGaps,
+} from '#shared/lib/map-style-fallbacks'
+import {
   allTripPointsGeoJson,
   boundsForOverview,
   boundsForTrips,
@@ -178,6 +182,7 @@ function addTripLayers() {
 
 function onStyleReady() {
   if (!map) return
+  patchLibertyStyleGaps(map)
   addTripLayers()
   scheduleSync()
 }
@@ -215,6 +220,8 @@ function tryCreateMap() {
     maxPitch: 0,
     renderWorldCopies: false,
   })
+
+  bindMapStyleFallbacks(map)
 
   map.on('load', () => {
     map?.resize()
