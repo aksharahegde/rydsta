@@ -19,17 +19,17 @@ async function goToWrapped(page: import('@playwright/test').Page) {
   await expect(page.getByTestId('wrapped-bento-grid')).toBeVisible({ timeout: 30_000 })
 }
 
-test.describe('theme toggle', () => {
+test.describe('light mode', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.evaluate(() => {
-      localStorage.setItem('rydsta-color-mode', 'light')
-      document.documentElement.classList.remove('dark')
+      localStorage.setItem('rydsta-color-mode', 'dark')
+      document.documentElement.classList.add('dark')
     })
     await page.reload()
   })
 
-  test('light mode uses a bright page background', async ({ page }) => {
+  test('always uses a bright page background', async ({ page }) => {
     await expect(page.locator('html')).not.toHaveClass(/dark/)
 
     const paper = await page.evaluate(() =>
@@ -43,14 +43,8 @@ test.describe('theme toggle', () => {
     expect(bg).toMatch(/0\.9[5-9]|99%/)
   })
 
-  test('upload page stays light after toggle', async ({ page }) => {
+  test('upload page stays light', async ({ page }) => {
     await page.goto('/upload')
-    await expect(page.locator('html')).not.toHaveClass(/dark/)
-
-    await page.getByTestId('ride-theme-toggle').click()
-    await expect(page.locator('html')).toHaveClass(/dark/)
-
-    await page.getByTestId('ride-theme-toggle').click()
     await expect(page.locator('html')).not.toHaveClass(/dark/)
 
     const bg = await page.evaluate(() =>
@@ -59,11 +53,7 @@ test.describe('theme toggle', () => {
     expect(bg).toMatch(/0\.9[5-9]|99%/)
   })
 
-  test('download CTA text is readable in light mode', async ({ page }) => {
-    await page.evaluate(() => {
-      localStorage.setItem('rydsta-color-mode', 'light')
-      document.documentElement.classList.remove('dark')
-    })
+  test('download CTA text is readable', async ({ page }) => {
     await goToWrapped(page)
 
     const heading = page.getByText('Share your wrapped')
@@ -86,24 +76,10 @@ test.describe('theme toggle', () => {
     expect(contrast.bColor).not.toBe(contrast.bBg)
   })
 
-  test('toggle switches between light and dark', async ({ page }) => {
-    const toggle = page.getByTestId('ride-theme-toggle')
-
-    await toggle.click()
-    await expect(page.locator('html')).toHaveClass(/dark/)
-    await expect.poll(() =>
-      page.evaluate(() => localStorage.getItem('rydsta-color-mode')),
-    ).toBe('dark')
-
-    await toggle.click()
+  test('migrates stored dark preference to light', async ({ page }) => {
     await expect(page.locator('html')).not.toHaveClass(/dark/)
     await expect.poll(() =>
       page.evaluate(() => localStorage.getItem('rydsta-color-mode')),
     ).toBe('light')
-
-    const bg = await page.evaluate(() =>
-      getComputedStyle(document.querySelector('.rw-page')!).backgroundColor,
-    )
-    expect(bg).toMatch(/0\.9[5-9]|99%/)
   })
 })

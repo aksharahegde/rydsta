@@ -14,7 +14,7 @@ export default defineNuxtConfig({
       script: [
         {
           key: 'ride-theme-init',
-          innerHTML: `(function(){try{var k='rydsta-color-mode',s=localStorage.getItem(k),d=s==='dark';if(d)document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark')}catch(e){}})();`,
+          innerHTML: `(function(){try{document.documentElement.classList.remove('dark');localStorage.setItem('rydsta-color-mode','light')}catch(e){}})();`,
           tagPosition: 'head',
         },
       ],

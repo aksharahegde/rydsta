@@ -5,7 +5,6 @@ import {
   MAP_OVERVIEW_MAX_ZOOM,
   MAP_OVERVIEW_MIN_ZOOM,
   MAP_PLAYBACK_MAX_ZOOM,
-  MAP_STYLE_DARK,
   MAP_STYLE_LIGHT,
 } from '~/constants/map-styles'
 import {
@@ -56,7 +55,7 @@ let lastPlaybackArcIndex = -1
 
 const arcDrawMs = computed(() => arcDrawMsForSpeed(props.playbackSpeed))
 
-const { isDark } = useRideTheme()
+const ROUTE_COLOR = '#1c2233'
 
 const containerRef = ref<HTMLElement | null>(null)
 let map: maplibregl.Map | null = null
@@ -76,10 +75,8 @@ const tripsSyncKey = computed(() => {
   return `${trips.length}:${first}:${last}`
 })
 
-const routeColor = computed(() => (isDark.value ? '#f8f6f2' : '#1c2233'))
-
 function mapStyleUrl(): string {
-  return isDark.value ? MAP_STYLE_DARK : MAP_STYLE_LIGHT
+  return MAP_STYLE_LIGHT
 }
 
 function addTripLayers() {
@@ -131,7 +128,7 @@ function addTripLayers() {
     type: 'line',
     source: 'trip-arc',
     paint: {
-      'line-color': routeColor.value,
+      'line-color': ROUTE_COLOR,
       'line-width': 4,
       'line-opacity': 0.95,
     },
@@ -239,7 +236,7 @@ function setGeoJson(sourceId: string, data: object) {
 
 function updateRouteColor() {
   if (!map?.getLayer('trip-arc-line')) return
-  map.setPaintProperty('trip-arc-line', 'line-color', routeColor.value)
+  map.setPaintProperty('trip-arc-line', 'line-color', ROUTE_COLOR)
 }
 
 function cancelArcAnimation() {
@@ -449,14 +446,6 @@ function syncMap() {
   }
 }
 
-function reloadStyle() {
-  if (!map) return
-  cancelArcAnimation()
-  lastPlaybackArcIndex = -1
-  layersReady = false
-  map.setStyle(mapStyleUrl())
-}
-
 watch(
   () =>
     [
@@ -472,14 +461,6 @@ watch(
     scheduleSync()
   },
 )
-
-watch(isDark, () => {
-  reloadStyle()
-})
-
-watch(routeColor, () => {
-  updateRouteColor()
-})
 
 function bindContainer(el: HTMLElement | null) {
   containerObserver?.disconnect()

@@ -29,6 +29,5 @@ defineProps<{
         >{{ current }}</span>
       </template>
     </div>
-    <RideThemeToggle />
   </nav>
 </template>

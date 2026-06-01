@@ -42,7 +42,6 @@ useSeoMeta({
           <RideLogo />
         </NuxtLink>
         <div class="rw-nav__actions">
-          <RideThemeToggle />
           <NuxtLink
             to="/about"
             class="rw-nav-about"
