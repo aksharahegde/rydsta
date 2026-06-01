@@ -20,6 +20,7 @@ import {
 } from '#shared/lib/trip-map-playback'
 import { arcDrawMsForSpeed } from '#shared/lib/map-playback-speed'
 import type { Trip } from '#shared/types/trip'
+import { palette } from '~/constants/palette'
 
 const emit = defineEmits<{
   ready: []
@@ -55,7 +56,7 @@ let lastPlaybackArcIndex = -1
 
 const arcDrawMs = computed(() => arcDrawMsForSpeed(props.playbackSpeed))
 
-const ROUTE_COLOR = '#1c2233'
+const ROUTE_COLOR = palette.richBlack
 
 const containerRef = ref<HTMLElement | null>(null)
 let map: maplibregl.Map | null = null
@@ -97,10 +98,10 @@ function addTripLayers() {
     filter: ['==', ['get', 'kind'], 'pickup'],
     paint: {
       'circle-radius': 3,
-      'circle-color': '#c88a2e',
+      'circle-color': palette.gold,
       'circle-opacity': 0.55,
       'circle-stroke-width': 1,
-      'circle-stroke-color': '#f8f6f2',
+      'circle-stroke-color': palette.paper,
     },
   })
 
@@ -111,10 +112,10 @@ function addTripLayers() {
     filter: ['==', ['get', 'kind'], 'dropoff'],
     paint: {
       'circle-radius': 2.5,
-      'circle-color': '#1c2233',
+      'circle-color': palette.richBlack,
       'circle-opacity': 0.45,
       'circle-stroke-width': 1,
-      'circle-stroke-color': '#c88a2e',
+      'circle-stroke-color': palette.gold,
     },
   })
 
@@ -154,9 +155,9 @@ function addTripLayers() {
     source: 'trip-active-pickup',
     paint: {
       'circle-radius': 9,
-      'circle-color': '#c88a2e',
+      'circle-color': palette.gold,
       'circle-stroke-width': 2.5,
-      'circle-stroke-color': '#f8f6f2',
+      'circle-stroke-color': palette.paper,
     },
   })
 
@@ -166,9 +167,9 @@ function addTripLayers() {
     source: 'trip-active-dropoff',
     paint: {
       'circle-radius': 8,
-      'circle-color': '#1c2233',
+      'circle-color': palette.richBlack,
       'circle-stroke-width': 2.5,
-      'circle-stroke-color': '#c88a2e',
+      'circle-stroke-color': palette.gold,
     },
   })
 

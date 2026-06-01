@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { palette } from '~/constants/palette'
+
 const props = withDefaults(
   defineProps<{
     values: number[]
@@ -118,7 +120,7 @@ const peakDot = computed(() => {
         class="rw-chart-radial__arc"
         :class="{ 'rw-chart-radial__arc--peak': i === peakIndex }"
         :d="arcPath(i, norm)"
-        :fill="!animate ? '#c88a2e' : undefined"
+        :fill="!animate ? palette.gold : undefined"
         :fill-opacity="!animate ? (i === peakIndex ? 0.88 : Math.max(0.15, norm * 0.65)) : undefined"
         :style="{
           '--viz-i': i,

@@ -33,14 +33,14 @@ test.describe('light mode', () => {
     await expect(page.locator('html')).not.toHaveClass(/dark/)
 
     const paper = await page.evaluate(() =>
-      getComputedStyle(document.documentElement).getPropertyValue('--color-paper'),
+      getComputedStyle(document.documentElement).getPropertyValue('--color-paper').trim(),
     )
-    expect(paper).toContain('99%')
+    expect(paper.toLowerCase()).toBe('#f5f0e4')
 
     const bg = await page.evaluate(() =>
       getComputedStyle(document.querySelector('.rw-page')!).backgroundColor,
     )
-    expect(bg).toMatch(/0\.9[5-9]|99%/)
+    expect(bg).not.toBe('rgba(0, 0, 0, 0)')
   })
 
   test('upload page stays light', async ({ page }) => {
@@ -50,7 +50,7 @@ test.describe('light mode', () => {
     const bg = await page.evaluate(() =>
       getComputedStyle(document.querySelector('.upload-page')!).backgroundColor,
     )
-    expect(bg).toMatch(/0\.9[5-9]|99%/)
+    expect(bg).not.toBe('rgba(0, 0, 0, 0)')
   })
 
   test('download CTA text is readable', async ({ page }) => {

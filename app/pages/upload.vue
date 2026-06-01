@@ -117,8 +117,8 @@ async function onFilesSelected(files: File[]) {
   margin: var(--space-sm) 0 0;
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
-  background: oklch(55% 0.2 25 / 0.12);
-  color: oklch(55% 0.22 25);
+  background: color-mix(in srgb, var(--palette-crimson) 12%, transparent);
+  color: var(--palette-crimson);
   font-size: var(--text-sm);
 }
 

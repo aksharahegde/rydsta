@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { palette } from '~/constants/palette'
+
 const props = withDefaults(
   defineProps<{
     values: number[]
@@ -78,7 +80,7 @@ const segments = computed((): ArcSeg[] =>
       class="rw-chart-arc-ring__seg"
       :class="{ 'rw-chart-arc-ring__seg--peak': seg.isPeak }"
       :d="seg.d"
-      :stroke="!animate ? '#c88a2e' : undefined"
+      :stroke="!animate ? palette.gold : undefined"
       :stroke-width="!animate ? seg.strokeW : undefined"
       :opacity="!animate ? seg.opacity : undefined"
       :style="{
